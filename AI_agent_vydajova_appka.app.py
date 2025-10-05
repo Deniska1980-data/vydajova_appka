@@ -287,6 +287,7 @@ def get_rate_for(code: str, d: dt_date):
 # =========================
 @st.cache_data(ttl=24*3600)
 def holiday_name_on(iso2: str, d: dt_date):
+    """Vráti názov sviatku (ak existuje), s prekladom pre SK/CZ."""
     if not iso2 or not CALENDARIFIC_KEY:
         return ""
     params = {
@@ -304,8 +305,20 @@ def holiday_name_on(iso2: str, d: dt_date):
         hol = js.get("response", {}).get("holidays", [])
         if not hol:
             return ""
-        # vezmeme prvý sviatok v daný deň
-        return hol[0].get("name", "")
+        name = hol[0].get("name", "")
+        # Preklady niektorých známych sviatkov
+        translations = {
+            "Christmas Eve": "Štedrý večer / Štědrý večer (Vianoce / Vánoce)",
+            "Christmas Day": "1. sviatok vianočný / 1. svátek vánoční",
+            "Boxing Day": "2. sviatok vianočný / 2. svátek vánoční",
+            "New Year's Day": "Nový rok",
+            "Easter Sunday": "Veľkonočná nedeľa / Velikonoční neděle",
+            "Easter Monday": "Veľkonočný pondelok / Velikonoční pondělí",
+            "Good Friday": "Veľký piatok / Velký pátek",
+        }
+        if name in translations:
+            name = translations[name]
+        return name
     except Exception:
         return ""
 
@@ -320,18 +333,22 @@ def season_for(d: dt_date):
     return "autumn"
 
 def avatar_ascii(d: dt_date):
+    """Panáčik s doplnkami podľa obdobia (šál okolo krku, čiapka, okuliare...)"""
     s = season_for(d)
-    hat = "   🎅\n" if (d.month == 12 and 20 <= d.day <= 26) else ""
+    hat = "  🎅\n" if (d.month == 12 and 20 <= d.day <= 26) else ""
     head = "   🔵\n"
-    scarf = "   🧣\n" if s == "winter" else ""
+    scarf = "  🧣\n" if s == "winter" else ""
     arms = "  /│\\\n"
     legs = "  / \\\n"
+
     if s == "summer":
         head = "   😎\n"
     if s == "spring":
         arms = "  💪│💪\n"
     if s == "autumn":
         legs = "   🍄\n"
+
+    # Panáčik má šál pod hlavou, aby vyzeral realisticky
     return f"{hat}{head}{scarf}{arms}{legs}"
 
 def bubble(text: str, lang: str, d: dt_date):
@@ -480,3 +497,4 @@ if not df.empty:
     # export
     csv = df.to_csv(index=False).encode("utf-8")
     st.download_button(TEXTS[LANG]["export"], data=csv, file_name=f"expenses_{dt_date.today().isoformat()}.csv", mime="text/csv")
+
