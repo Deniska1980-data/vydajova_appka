@@ -66,7 +66,13 @@ CAL_BASE = "https://calendarific.com/api/v2/holidays"
 # ───────────────────────────────────────────────────────────────────────────────
 left, right = st.columns([7,3])
 with right:
-    lang_choice = st.selectbox("🌐 Language / Jazyk", ["Slovensky / Česky", "English"], index=0)
+    lang_choice = st.selectbox(
+    "🌐 Language / Jazyk",
+    ["Slovensky / Česky", "English"],
+    index=0,
+    key="language_selector"
+)
+
 LANG = "sk" if "Slovensky" in lang_choice else "en"
 
 TEXTS = {
@@ -517,6 +523,7 @@ if not df.empty:
         file_name=file_name,
         mime="text/csv",
     )
+
 
 
 
