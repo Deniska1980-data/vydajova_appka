@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 import altair as alt
+import os
 from datetime import datetime, date as dt_date
 
 # ---------------------------
@@ -58,11 +59,16 @@ with right:
 LANG = "sk" if "Slovensky" in lang_choice else "en"
 
 # ---------------------------
-# LOAD AI AGENT MESSAGES FROM CSV
+# LOAD AI AGENT MESSAGES FROM CSV (safe path)
 # ---------------------------
 @st.cache_data
 def load_messages_csv():
-    df = pd.read_csv("AI_agent_vydajova_appka/hlasky_kategorie_SK_CZ_EN.csv")
+    base_path = os.path.dirname(__file__)
+    file_path = os.path.join(base_path, "hlasky_kategorie_SK_CZ_EN.csv")
+    if not os.path.exists(file_path):
+        st.error(f"❌ Súbor s hláškami IssueCoin sa nenašiel: {file_path}")
+        return pd.DataFrame()
+    df = pd.read_csv(file_path, encoding="utf-8")
     df.columns = [c.strip() for c in df.columns]
     return df
 
@@ -73,14 +79,9 @@ except Exception as e:
     hlasky_df = pd.DataFrame()
 
 def get_agent_message(category, lang):
-    """Return IssueCoin message for given category and language."""
     if hlasky_df.empty:
         return None
-    if lang == "sk":
-        col_lang = "SK_CZ"
-    else:
-        col_lang = "EN"
-
+    col_lang = "SK_CZ" if lang == "sk" else "EN"
     match = hlasky_df[hlasky_df["category"].str.lower().str.contains(category.split()[0].lower(), na=False)]
     if not match.empty:
         return match.iloc[0][col_lang]
@@ -139,27 +140,37 @@ CATEGORIES = {
     "sk": [
         "Potraviny 🛒 / Potraviny 🛒",
         "Drogérie 🧴 / Drogérie 🧴",
+        "Odevy 👕 / Oblečení 👕",
+        "Doprava 🚌 / Doprava 🚌",
+        "Reštaurácie a bary 🍽️ / Restaurace a bary 🍽️",
         "Zábava 🎉 / Zábava 🎉",
+        "Obuv 👟 / Obuv 👟",
         "Elektronika 💻 / Elektronika 💻",
         "Domácnosť / nábytok 🛋️ / Domácnost / nábytek 🛋️",
-        "Odevy 👕 / Oblečení 👕",
-        "Obuv 👟 / Obuv 👟",
+        "Šport a voľný čas 🏀 / Sport a volný čas 🏀",
+        "Zdravie a lekáreň 💊 / Zdraví a lékárna 💊",
         "Cestovanie / dovolenka ✈️ / Cestování / dovolená ✈️",
+        "Vzdelávanie / kurzy 📚 / Vzdělávání / kurzy 📚"
     ],
     "en": [
         "Groceries 🛒",
         "Drugstore 🧴",
+        "Clothing 👕",
+        "Transport 🚌",
+        "Restaurants & Bars 🍽️",
         "Entertainment 🎉",
+        "Shoes 👟",
         "Electronics 💻",
         "Household / Furniture 🛋️",
-        "Clothing 👕",
-        "Shoes 👟",
+        "Sports & Leisure 🏀",
+        "Health & Pharmacy 💊",
         "Travel / Holiday ✈️",
+        "Education / Courses 📚"
     ]
 }
 
 # ---------------------------
-# COUNTRIES + CURRENCIES (FULL)
+# COUNTRIES (FULL)
 # ---------------------------
 COUNTRIES = {
     "sk": [
@@ -228,10 +239,7 @@ COUNTRIES = {
     ]
 }
 
-COUNTRY_TO_CODE = {}
-for label in COUNTRIES["sk"] + COUNTRIES["en"]:
-    code = label.split("–")[-1].strip().split()[0]
-    COUNTRY_TO_CODE[label] = code
+COUNTRY_TO_CODE = {label: label.split("–")[-1].strip().split()[0] for label in COUNTRIES["sk"] + COUNTRIES["en"]}
 
 # ---------------------------
 # STATE INIT
@@ -243,7 +251,7 @@ if "expenses" not in st.session_state:
     ])
 
 # ---------------------------
-# CNB API HELPERS
+# CNB HELPERS
 # ---------------------------
 @st.cache_data(ttl=600)
 def fetch_cnb_txt(date_str: str):
@@ -261,7 +269,7 @@ def fetch_cnb_txt_latest():
         return None
     return r.text
 
-def parse_rate_from_txt(txt: str, code: str):
+def parse_rate_from_txt(txt, code):
     if not txt:
         return None, None, None
     lines = txt.splitlines()
@@ -279,7 +287,7 @@ def parse_rate_from_txt(txt: str, code: str):
                     return None, None, header_date
     return None, None, header_date
 
-def get_rate_for(code: str, d: dt_date):
+def get_rate_for(code, d):
     d_str = d.strftime("%d.%m.%Y")
     txt = fetch_cnb_txt(d_str)
     rate, qty, header_date = parse_rate_from_txt(txt, code)
@@ -294,7 +302,7 @@ def get_rate_for(code: str, d: dt_date):
     return rate/qty, rate_date_iso
 
 # ---------------------------
-# UI HEADER
+# HEADER
 # ---------------------------
 st.title(TEXTS[LANG]["app_title"])
 st.caption(TEXTS[LANG]["subtitle"])
@@ -315,7 +323,7 @@ with st.form("form"):
     submit = st.form_submit_button(TEXTS[LANG]["save"])
 
 # ---------------------------
-# SAVE + AI AGENT MESSAGE
+# SAVE + AI MESSAGE
 # ---------------------------
 if submit:
     code = COUNTRY_TO_CODE[country]
@@ -339,7 +347,7 @@ if submit:
         st.session_state["expenses"] = pd.concat([st.session_state["expenses"], new_row], ignore_index=True)
         st.success(f"{TEXTS[LANG]['saved_ok']} {converted} CZK — {TEXTS[LANG]['rate_info']}: {round(per_unit,4)} CZK/1 {code} ({TEXTS[LANG]['rate_from']} {rate_date})")
 
-        # SUMS PER CATEGORY
+        # SUMS
         sums = st.session_state["expenses"].groupby("Category")["Converted_CZK"].sum()
 
         # LIMITS
@@ -397,4 +405,3 @@ if not df.empty:
         file_name=file_name,
         mime="text/csv",
     )
-
