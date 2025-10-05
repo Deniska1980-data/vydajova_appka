@@ -13,24 +13,14 @@ st.set_page_config(page_title="Expense Diary", layout="wide")
 # --------------------------------------
 # LOAD ISSUECOIN MESSAGES
 # --------------------------------------
+# Načítanie CSV s hláškami IssueCoin
 @st.cache_data
 def load_messages_csv():
-    possible_paths = [
-        "hlasky_kategorie_SK_CZ_EN.csv",
-        "./hlasky_kategorie_SK_CZ_EN.csv",
-    ]
-    for path in possible_paths:
-        if os.path.exists(path):
-            try:
-                # Najskôr sa skúsi načítať klasický CSV s čiarkou
-                df = pd.read_csv(path, encoding="utf-8")
-            except pd.errors.ParserError:
-                # Ak to zlyhá, skúsi sa načítať s bodkočiarkou
-                df = pd.read_csv(path, sep=";", encoding="utf-8")
-            df.columns = [c.strip() for c in df.columns]
-            return df
-    st.error("❌ Nepodarilo sa načítať súbor s hláškami IssueCoin.")
-    return pd.DataFrame()
+    try:
+        return pd.read_csv("AI_agent_kategorie_hlasky.csv", delimiter=";", encoding="utf-8")
+    except Exception as e:
+        st.error(f"❌ Nepodarilo sa načítať súbor s hláškami IssueCoin: {e}")
+        return pd.DataFrame()
 
 messages_df = load_messages_csv()
 
@@ -238,6 +228,7 @@ def show_issuecoin_message():
 # zobrazenie hlášky, ak je zadaná suma
 if amount > 0:
     show_issuecoin_message()
+
 
 
 
