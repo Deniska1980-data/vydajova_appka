@@ -14,25 +14,18 @@ from datetime import datetime, date as dt_date
 # ----------------------------------------
 if 'lang' not in st.session_state:
     st.session_state['lang'] = 'SK'  # predvolený jazyk (SK/CZ/EN)
-
-if st.session_state['lang'] == 'SK':
+# ------------------------------------------
+if language == "Slovensky / Česky":
     st.info(
         "🔒 Táto aplikácia ukladá tvoje údaje **iba lokálne** na tvojom zariadení. "
         "Žiadne dáta sa neposielajú na server — všetko prebieha bezpečne a v súlade s GDPR. "
         "Tvoje dáta zostávajú len u teba. 💾",
         icon="ℹ️"
     )
-elif st.session_state['lang'] == 'CZ':
-    st.info(
-        "🔒 Tato aplikace ukládá tvoje údaje **pouze lokálně** na tvém zařízení. "
-        "Žádná data se neodesílají na server — vše probíhá bezpečně a v souladu s GDPR. "
-        "Tvoje data zůstávají pouze u tebe. 💾",
-        icon="ℹ️"
-    )
-else:
+elif language == "English":
     st.info(
         "🔒 This app stores your data **locally only** on your device. "
-        "No information is sent to any server — fully secure and GDPR compliant. "
+        "No information is sent to any server — everything is secure and GDPR compliant. "
         "Your data stays with you. 💾",
         icon="ℹ️"
     )
@@ -518,5 +511,6 @@ if not df.empty:
         file_name=file_name,
         mime="text/csv",
     )
+
 
 
