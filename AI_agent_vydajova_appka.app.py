@@ -229,6 +229,43 @@ def show_issuecoin_message():
 if amount > 0:
     show_issuecoin_message()
 
+# ----------------------------
+# Uloženie záznamu do CSV
+# ----------------------------
+
+import pandas as pd
+from datetime import datetime
+import os
+
+# Tlačidlo uloženia
+if st.button("💾 Uložiť záznam"):
+    if amount and category:
+        # Pripravíme nový záznam
+        new_record = {
+            "Dátum nákupu": date.strftime("%Y-%m-%d") if "date" in locals() else datetime.now().strftime("%Y-%m-%d"),
+            "Krajina + mena": country_currency,
+            "Suma": amount,
+            "Obchod / miesto": store if "store" in locals() else "",
+            "Kategória": category,
+            "Poznámka": note if "note" in locals() else "",
+            "Prepočítaná hodnota v CZK": converted_value
+        }
+
+        file_name = "vydavky_data.csv"
+
+        # Ak súbor existuje, pridaj riadok, inak vytvor nový
+        if os.path.exists(file_name):
+            df = pd.read_csv(file_name)
+            df = pd.concat([df, pd.DataFrame([new_record])], ignore_index=True)
+        else:
+            df = pd.DataFrame([new_record])
+
+        df.to_csv(file_name, index=False, encoding="utf-8-sig")
+
+        st.success("✅ Záznam bol úspešne uložený!")
+    else:
+        st.warning("⚠️ Zadaj aspoň sumu a kategóriu pred uložením.")
+
 
 
 
