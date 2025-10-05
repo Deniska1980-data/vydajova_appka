@@ -8,6 +8,9 @@ import random
 # Základné nastavenia
 # ------------------------------------------
 st.set_page_config(page_title="Expense Diary / Výdavkový denník", layout="wide")
+
+lang_choice = st.selectbox("🌐 Language / Jazyk", ["Slovensky / Česky", "English"], index=0)
+
 # ------------------------------------------
 # GDPR info banner (dvojjazyčný)
 # ------------------------------------------
@@ -513,6 +516,7 @@ if not df.empty:
         file_name=file_name,
         mime="text/csv",
     )
+
 
 
 
