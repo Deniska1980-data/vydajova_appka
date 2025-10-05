@@ -1,0 +1,22 @@
+﻿kontext;Jazyk;Hláška
+výber_jazyka;SK;"👉""Najprv si vyber jazyk, ktorým budeš hovoriť!"""
+výber_jazyka;SK;"👉""Bez jazyka ma nezapneš - som predsa len agent 😉"""
+výber_jazyka;SK;"👉""Slovenčina, čeština alebo angličtina - klikni a ideme na to."""
+výber_jazyka;CS;"👉""Nejdříve si vyber jazyk, kterým budeš mluvit!"""
+výber_jazyka;CS;"👉""Bez jazyka mě nespustíš - nejsem čaroděj 😀"""
+výber_jazyka;CS;"👉""Slovenština, čestina nebo angličtina - stačí kliknout."""
+výber_jazyka;EN;"👉""Please select the language you´ll be speaking first!"""
+výber_jazyka;EN;"👉""I need a language before I can listen - I´m smart, but not psychic! 😉"""
+výber_jazyka;EN;"👉""Slovak, Czech or English - just pick one and let´s go!"""
+spustenie_mikrofonu;SK;🗣️ „Haló, ešte si nič nepovedal – mikrofón ťa počúva!“
+spustenie_mikrofonu;SK;🗣️ „Povedz mi, čo si dnes minul. 😉“
+spustenie_mikrofonu;SK;🗣️ „Čakám na tvoje výdavky – neboj sa, som tu s tebou.“
+spustenie_mikrofonu;CS; 🗣️„Haló, ještě jsi nic neřekl – mikrofon tě poslouchá!“
+spustenie_mikrofonu;CS;🗣️ „Řekni mi, co jsi dnes utratil. 😉“
+spustenie_mikrofonu;CS;🗣️ „Čekám na tvé výdaje – neboj, jsem tu s tebou.“
+spustenie_mikrofonu;EN;🗣️ “Hey, you haven’t said anything yet – I’m listening!”
+spustenie_mikrofonu;EN;🗣️ “Tell me what you spent today. 😉”
+spustenie_mikrofonu;EN;🗣️ “Waiting for your expenses – don’t worry, I’m here with you.”
+výber_dátumu;Slovenčina;📅Dáta o výdavkoch sa ukládajú iba do tvojho zariadenia, neodosielajú sa na žiadny server. Tvoje súkromie je chránené podľa zásad GDPR. 
+výber_dátumu;Čeština;📅Údaje o výdajích se ukládají pouze do tvého zařízení, neodesílají se na žádný server. Tvé soukromí je chráněno dle zásad GDPR.
+výber_dátumu;English;📅Your expense data is stored only on your device, it´s not send to any server. Your privacy is protected according to GDPR principles.
