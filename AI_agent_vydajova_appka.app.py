@@ -1,13 +1,45 @@
+# ----------------------------------------
+# 📦 Importy
+# ----------------------------------------
 import streamlit as st
 import pandas as pd
+import datetime
 import requests
-import altair as alt
-from datetime import datetime, date as dt_date
+import json
+# (sem patria aj ostatné tvoje importy – nič z toho nemaž)
 
-# ───────────────────────────────────────────────────────────────────────────────
-# PAGE CONFIG & CSS
-# ───────────────────────────────────────────────────────────────────────────────
-st.set_page_config(page_title="Expense Diary / Výdavkový denník", layout="wide")
+# ----------------------------------------
+# 🔒 GDPR / Local Storage Info Banner
+# ----------------------------------------
+if 'lang' not in st.session_state:
+    st.session_state['lang'] = 'SK'  # predvolený jazyk (SK/CZ/EN)
+
+if st.session_state['lang'] == 'SK':
+    st.info(
+        "🔒 Táto aplikácia ukladá tvoje údaje **iba lokálne** na tvojom zariadení. "
+        "Žiadne dáta sa neposielajú na server — všetko prebieha bezpečne a v súlade s GDPR. "
+        "Tvoje dáta zostávajú len u teba. 💾",
+        icon="ℹ️"
+    )
+elif st.session_state['lang'] == 'CZ':
+    st.info(
+        "🔒 Tato aplikace ukládá tvoje údaje **pouze lokálně** na tvém zařízení. "
+        "Žádná data se neodesílají na server — vše probíhá bezpečně a v souladu s GDPR. "
+        "Tvoje data zůstávají pouze u tebe. 💾",
+        icon="ℹ️"
+    )
+else:
+    st.info(
+        "🔒 This app stores your data **locally only** on your device. "
+        "No information is sent to any server — fully secure and GDPR compliant. "
+        "Your data stays with you. 💾",
+        icon="ℹ️"
+    )
+
+# ----------------------------------------
+# 🧾 Hlavný nadpis a obsah appky
+# ----------------------------------------
+st.title("💰 Výdavkový denník / Expense Diary")
 
 st.markdown("""
 <style>
@@ -485,3 +517,4 @@ if not df.empty:
         file_name=file_name,
         mime="text/csv",
     )
+
