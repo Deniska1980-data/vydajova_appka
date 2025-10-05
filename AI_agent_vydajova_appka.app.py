@@ -1,19 +1,25 @@
-# ----------------------------------------
-# 📦 Importy
-# ----------------------------------------
 import streamlit as st
+from datetime import date as dt_date
 import pandas as pd
 import requests
-import json
-from datetime import datetime, date as dt_date
+import random
 
-# (sem patria aj ostatné tvoje importy – nič z toho nemaž)
+# ------------------------------------------
+# Základné nastavenia
+# ------------------------------------------
+st.set_page_config(page_title="Expense Diary / Výdavkový denník", layout="wide")
 
-# ----------------------------------------
-# 🔒 GDPR / Local Storage Info Banner
-# ----------------------------------------
-if 'lang' not in st.session_state:
-    st.session_state['lang'] = 'SK'  # predvolený jazyk (SK/CZ/EN)
+# ------------------------------------------
+# Jazykový prepínač
+# ------------------------------------------
+language = st.selectbox(
+    "🌐 Language / Jazyk",
+    ["Slovensky / Česky", "English"],
+    index=0
+)
+
+# ------------------------------------------
+# GDPR info banner (dvojjazyčný)
 # ------------------------------------------
 if language == "Slovensky / Česky":
     st.info(
@@ -511,6 +517,7 @@ if not df.empty:
         file_name=file_name,
         mime="text/csv",
     )
+
 
 
 
