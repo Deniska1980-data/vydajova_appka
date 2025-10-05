@@ -4,6 +4,32 @@ import requests
 import altair as alt
 from datetime import datetime, date as dt_date
 
+st.markdown("""
+<style>
+.issuecoin-wrap {
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+.issuecoin-figure {
+    text-align: center;
+    line-height: 1;
+    margin-right: 10px;
+}
+.issuecoin-figure div {
+    display: block;
+}
+.issuecoin-bubble {
+    background-color: #e9f3ff;
+    border-radius: 10px;
+    padding: 8px 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    font-size: 16px;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # -------------------------------------------------
 # PAGE CONFIG
 # -------------------------------------------------
@@ -337,43 +363,31 @@ st.markdown(f'<div class="gdpr">{TEXTS[LANG]["gdpr"]}</div>', unsafe_allow_html=
 # ISSUECOIN PANÁČIK (render)
 # -------------------------------------------------
 def show_issuecoin_message(msg: str, d: dt_date, holiday_name: str | None = None):
-    # Season icons
     m = d.month
     addon = "🏋️" if m in [3,4,5] else ("😎" if m in [6,7,8] else ("🍄" if m in [9,10,11] else "🧣"))
 
-    # Special holiday overlays
     msg_final = msg
     if holiday_name:
         name_low = holiday_name.lower()
         if any(k in name_low for k in ["christmas", "vianoce", "vánoce"]):
             addon = "🎅"
-            msg_final = ("🎄 Krásne Vianoce! Nech máš plné brucho aj srdce. "
-                         "Uži si deň v pokoji. 💙" if LANG=="sk"
-                         else "🎄 Merry Christmas! May your heart (and belly) be full. Enjoy the day in peace. 💙")
+            msg_final = "🎄 Veselé Vianoce! Daj si pohodu a teplý čaj. 💙"
         elif any(k in name_low for k in ["new year", "silvester", "nový rok"]):
             addon = "🎉"
-            msg_final = ("🎆 Šťastný Nový rok! Malé kroky, veľké výsledky – aj v rozpočte. ✨"
-                         if LANG=="sk" else
-                         "🎆 Happy New Year! Small steps, big results – for your budget too. ✨")
+            msg_final = "🎆 Šťastný Nový rok! Nové ciele, nové šance. ✨"
         elif any(k in name_low for k in ["easter", "veľká noc", "velikonoce"]):
             addon = "🐣"
-            msg_final = ("🐣 Veselú Veľkú noc! Dopraj si radosť, ale s mierou. 🙂"
-                         if LANG=="sk" else
-                         "🐣 Happy Easter! Treat yourself – gently. 🙂")
+            msg_final = "🐣 Veselú Veľkú noc! Uži si deň s úsmevom. 🙂"
 
-    # Black Friday (20–30 Nov)
     if m == 11 and 20 <= d.day <= 30 and not holiday_name:
         addon = "🛍️"
-        msg_final = ("🛍️ Black Friday! Ak je ponuka dobrá, choď do toho – len nekupuj to, čo netreba. 😉"
-                     if LANG=="sk" else
-                     "🛍️ Black Friday! If it’s a good deal, go for it – just skip what you don’t need. 😉")
+        msg_final = "🛍️ Black Friday! Nakupuj s rozumom, nie zo zvyku. 😉"
 
-    # --- New: head aligned directly above the body ---
     st.markdown(f"""
         <div class="issuecoin-wrap">
-            <div class="issuecoin-figure" style="text-align:center; line-height:1;">
-                <div style="font-size:40px; position:relative; top:10px;">🔵{addon}</div>
-                <div class="issuecoin-body" style="margin-top:-4px; font-family:monospace; font-size:18px;">
+            <div class="issuecoin-figure">
+                <div style="font-size:40px; position:relative; top:5px;">🔵{addon}</div>
+                <div style="margin-top:-3px; font-family:monospace; font-size:18px;">
                     &nbsp;/│\\<br>&nbsp;/ \\
                 </div>
             </div>
@@ -382,7 +396,6 @@ def show_issuecoin_message(msg: str, d: dt_date, holiday_name: str | None = None
             </div>
         </div>
     """, unsafe_allow_html=True)
-
 # -------------------------------------------------
 # INPUT FORM
 # -------------------------------------------------
@@ -489,4 +502,5 @@ if not df.empty:
 
     csv = df.to_csv(index=False).encode("utf-8")
     st.download_button(TEXTS[LANG]["export"], data=csv, file_name=f"expenses_{dt_date.today().isoformat()}.csv", mime="text/csv")
+
 
