@@ -3,9 +3,10 @@
 # ----------------------------------------
 import streamlit as st
 import pandas as pd
-import datetime
 import requests
 import json
+from datetime import datetime, date as dt_date
+
 # (sem patria aj ostatné tvoje importy – nič z toho nemaž)
 
 # ----------------------------------------
@@ -517,4 +518,5 @@ if not df.empty:
         file_name=file_name,
         mime="text/csv",
     )
+
 
