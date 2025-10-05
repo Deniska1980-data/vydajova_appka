@@ -21,7 +21,12 @@ def load_messages_csv():
     ]
     for path in possible_paths:
         if os.path.exists(path):
-            df = pd.read_csv(path, encoding="utf-8")
+            try:
+                # Najskôr sa skúsi načítať klasický CSV s čiarkou
+                df = pd.read_csv(path, encoding="utf-8")
+            except pd.errors.ParserError:
+                # Ak to zlyhá, skúsi sa načítať s bodkočiarkou
+                df = pd.read_csv(path, sep=";", encoding="utf-8")
             df.columns = [c.strip() for c in df.columns]
             return df
     st.error("❌ Nepodarilo sa načítať súbor s hláškami IssueCoin.")
@@ -221,3 +226,4 @@ def show_issuecoin_message():
 
 if amount > 0:
     show_issuecoin_message()
+
