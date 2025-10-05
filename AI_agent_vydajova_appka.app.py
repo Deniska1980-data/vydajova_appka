@@ -337,7 +337,7 @@ st.markdown(f'<div class="gdpr">{TEXTS[LANG]["gdpr"]}</div>', unsafe_allow_html=
 # ISSUECOIN PANÁČIK (render)
 # -------------------------------------------------
 def show_issuecoin_message(msg: str, d: dt_date, holiday_name: str | None = None):
-    # Seasonal addon
+    # Season icons
     m = d.month
     addon = "🏋️" if m in [3,4,5] else ("😎" if m in [6,7,8] else ("🍄" if m in [9,10,11] else "🧣"))
 
@@ -361,18 +361,21 @@ def show_issuecoin_message(msg: str, d: dt_date, holiday_name: str | None = None
                          if LANG=="sk" else
                          "🐣 Happy Easter! Treat yourself – gently. 🙂")
 
-    # Black Friday window (20–30 Nov)
+    # Black Friday (20–30 Nov)
     if m == 11 and 20 <= d.day <= 30 and not holiday_name:
         addon = "🛍️"
         msg_final = ("🛍️ Black Friday! Ak je ponuka dobrá, choď do toho – len nekupuj to, čo netreba. 😉"
                      if LANG=="sk" else
                      "🛍️ Black Friday! If it’s a good deal, go for it – just skip what you don’t need. 😉")
 
+    # --- New: head aligned directly above the body ---
     st.markdown(f"""
         <div class="issuecoin-wrap">
-            <div class="issuecoin-figure">
-                <div class="issuecoin-head" style="font-size:40px;">🔵{addon}</div>
-                <div class="issuecoin-body">/│\\<br>/ \\</div>
+            <div class="issuecoin-figure" style="text-align:center; line-height:1;">
+                <div style="font-size:40px; position:relative; top:10px;">🔵{addon}</div>
+                <div class="issuecoin-body" style="margin-top:-4px; font-family:monospace; font-size:18px;">
+                    &nbsp;/│\\<br>&nbsp;/ \\
+                </div>
             </div>
             <div class="issuecoin-bubble">
                 <strong>IssueCoin</strong><br>{msg_final}
@@ -486,3 +489,4 @@ if not df.empty:
 
     csv = df.to_csv(index=False).encode("utf-8")
     st.download_button(TEXTS[LANG]["export"], data=csv, file_name=f"expenses_{dt_date.today().isoformat()}.csv", mime="text/csv")
+
