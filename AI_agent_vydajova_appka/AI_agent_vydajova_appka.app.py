@@ -62,7 +62,7 @@ LANG = "sk" if "Slovensky" in lang_choice else "en"
 # ---------------------------
 @st.cache_data
 def load_messages_csv():
-    df = pd.read_csv("hlasky_kategorie_SK_CZ_EN.csv")
+    df = pd.read_csv("AI_agent_vydajova_appka/hlasky_kategorie_SK_CZ_EN.csv")
     df.columns = [c.strip() for c in df.columns]
     return df
 
@@ -359,7 +359,7 @@ if submit:
         if msg:
             st.markdown(f"""
                 <div class="issuecoin-box">
-                    <img src="obrazek_IssuaCoin_by_Deny.JPG" class="issuecoin-img" />
+                    <img src="AI_agent_vydajova_appka/obrazek_IssuaCoin_by_Deny.JPG" class="issuecoin-img" />
                     <div class="issuecoin-text">{msg}</div>
                 </div>
             """, unsafe_allow_html=True)
@@ -397,3 +397,4 @@ if not df.empty:
         file_name=file_name,
         mime="text/csv",
     )
+
