@@ -1,186 +1,292 @@
 import streamlit as st
 import pandas as pd
 import requests
-from datetime import date as dt_date, datetime
-import random
+from datetime import datetime, date as dt_date
+import altair as alt
 
-st.set_page_config(page_title="Výdavkový denník 💰", layout="centered")
+# ---------------------------
+# CONFIG
+# ---------------------------
+st.set_page_config(page_title="💰 Výdavkový denník / Expense Diary", layout="wide")
 
-# ==============================
-# KONŠTANTY A API
-# ==============================
-CNB_TXT_DAILY = "https://www.cnb.cz/en/financial_markets/foreign_exchange_market/exchange_rate_fixing/daily.txt"
-CNB_TXT_DAILY_AT = "https://www.cnb.cz/en/financial_markets/foreign_exchange_market/exchange_rate_fixing/daily.txt?date={date}"
-CALENDARIFIC_KEY = "SspqB3Ivo4c9xnvpAgX6XGyJMdOHMXRE"
-CALENDARIFIC_URL = "https://calendarific.com/api/v2/holidays"
+# ---------------------------
+# STYLES
+# ---------------------------
+st.markdown("""
+<style>
+html, body, [class*="css"] { font-size: 16px; line-height: 1.6; }
+h1 { font-size: 28px !important; }
+.issuecoin {
+    font-family: monospace;
+    text-align: center;
+    margin-top: 15px;
+    white-space: pre;
+    line-height: 1.2;
+}
+.issuecoin-msg {
+    text-align: center;
+    font-size: 18px;
+    margin-top: 10px;
+}
+</style>
+""", unsafe_allow_html=True)
 
-# ==============================
-# KRAJINY + KÓDY
-# ==============================
-COUNTRIES = {
+# ---------------------------
+# LANGUAGE SWITCH
+# ---------------------------
+col_lang, col_flag = st.columns([7, 3])
+with col_flag:
+    lang_choice = st.selectbox("🌐 Language / Jazyk", ["Slovensky / Česky", "English"], index=0)
+LANG = "sk" if "Slovensky" in lang_choice else "en"
+
+# ---------------------------
+# TRANSLATIONS
+# ---------------------------
+TEXTS = {
+    "sk": {
+        "title": "💰 Výdavkový denník / Výdajový deník",
+        "subtitle": "CZK = vždy 1:1. Ostatné meny podľa denného kurzu ČNB.",
+        "date": "📅 Dátum nákupu",
+        "country": "🌍 Krajina + mena",
+        "amount": "💵 Čiastka",
+        "category": "📂 Kategória",
+        "shop": "🏬 Obchod / miesto",
+        "note": "📝 Poznámka",
+        "save": "💾 Uložiť nákup",
+        "saved": "Záznam uložený!",
+        "summary": "📊 Súhrn výdavkov",
+        "total": "Celkom CZK",
+        "export": "💾 Exportovať CSV",
+        "holiday_msg": "🎉 Dnes je sviatok! Oddýchni si a uži deň. 😊",
+        "gdpr": "🔒 Údaje sa ukladajú len lokálne v tvojom zariadení (žiadny server, GDPR friendly)."
+    },
+    "en": {
+        "title": "💰 Expense Diary",
+        "subtitle": "CZK = always 1:1. Other currencies follow CNB daily rates.",
+        "date": "📅 Purchase date",
+        "country": "🌍 Country + currency",
+        "amount": "💵 Amount",
+        "category": "📂 Category",
+        "shop": "🏬 Shop / place",
+        "note": "📝 Note",
+        "save": "💾 Save purchase",
+        "saved": "Saved!",
+        "summary": "📊 Expenses summary",
+        "total": "Total CZK",
+        "export": "💾 Export CSV",
+        "holiday_msg": "🎉 Today is a public holiday! Enjoy your day off! 😊",
+        "gdpr": "🔒 Your data are stored locally only (no server, GDPR friendly)."
+    }
+}
+
+# ---------------------------
+# CATEGORIES
+# ---------------------------
+CATEGORIES = {
     "sk": [
-        "Česko – CZK Kč", "Slovensko – EUR €", "Nemecko – EUR €",
-        "Rakúsko – EUR €", "Poľsko – PLN zł", "Maďarsko – HUF Ft",
-        "Veľká Británia – GBP £", "USA – USD $", "Švajčiarsko – CHF ₣",
-        "Dánsko – DKK kr", "Švédsko – SEK kr", "Nórsko – NOK kr",
-        "Kanada – CAD $", "Japonsko – JPY ¥", "Holandsko – EUR €",
-        "Francúzsko – EUR €", "Španielsko – EUR €", "Taliansko – EUR €"
+        "Potraviny 🛒 / Potraviny 🛒",
+        "Drogérie 🧴 / Drogérie 🧴",
+        "Odevy 👕 / Oblečenie 👕",
+        "Doprava 🚌 / Doprava 🚌",
+        "Reštaurácie a bary 🍽️ / Restaurace a bary 🍽️",
+        "Zábava 🎉 / Zábava 🎉",
+        "Obuv 👟 / Obuv 👟",
+        "Elektronika 💻 / Elektronika 💻",
+        "Domácnosť / nábytok 🛋️ / Domácnost / nábytek 🛋️",
+        "Šport a voľný čas 🏀 / Sport a volný čas 🏀",
+        "Zdravie a lekáreň 💊 / Zdraví a lékárna 💊",
+        "Cestovanie / dovolenka ✈️ / Cestování / dovolená ✈️",
+        "Vzdelávanie / kurzy 📚 / Vzdělávání / kurzy 📚"
     ],
     "en": [
-        "Czechia – CZK Kč", "Slovakia – EUR €", "Germany – EUR €",
-        "Austria – EUR €", "Poland – PLN zł", "Hungary – HUF Ft",
-        "United Kingdom – GBP £", "USA – USD $", "Switzerland – CHF ₣",
-        "Denmark – DKK kr", "Sweden – SEK kr", "Norway – NOK kr",
-        "Canada – CAD $", "Japan – JPY ¥", "Netherlands – EUR €",
-        "France – EUR €", "Spain – EUR €", "Italy – EUR €"
+        "Groceries 🛒",
+        "Drugstore 🧴",
+        "Clothing 👕",
+        "Transport 🚌",
+        "Restaurants & Bars 🍽️",
+        "Entertainment 🎉",
+        "Shoes 👟",
+        "Electronics 💻",
+        "Household / Furniture 🛋️",
+        "Sports & Leisure 🏀",
+        "Health & Pharmacy 💊",
+        "Travel / Holiday ✈️",
+        "Education / Courses 📚"
+    ]
+}
+
+# ---------------------------
+# COUNTRIES (CNB + ISO2)
+# ---------------------------
+CNB_TXT_DAILY = "https://www.cnb.cz/cs/financni-trhy/devizovy-trh/kurzy-devizoveho-trhu/denni_kurz.txt"
+CNB_TXT_DAILY_AT = CNB_TXT_DAILY + "?date={date}"
+
+COUNTRIES = {
+    "sk": [
+        "Česko – CZK Kč",
+        "Slovensko – EUR €",
+        "Nemecko – EUR € / Německo – EUR €",
+        "Rakúsko – EUR € / Rakousko – EUR €",
+        "Poľsko – PLN zł / Polsko – PLN zł",
+        "Maďarsko – HUF Ft / Maďarsko – HUF Ft",
+        "Veľká Británia – GBP £ / Velká Británie – GBP £",
+        "USA – USD $",
+        "Švajčiarsko – CHF ₣ / Švýcarsko – CHF ₣",
+        "Dánsko – DKK kr / Dánsko – DKK kr",
+        "Švédsko – SEK kr / Švédsko – SEK kr",
+        "Nórsko – NOK kr / Norsko – NOK kr",
+        "Kanada – CAD $",
+        "Japonsko – JPY ¥",
+        "Holandsko – EUR € / Nizozemsko – EUR €",
+        "Belgicko – EUR € / Belgie – EUR €",
+        "Francúzsko – EUR € / Francie – EUR €",
+        "Španielsko – EUR € / Španělsko – EUR €",
+        "Taliansko – EUR € / Itálie – EUR €",
+        "Írsko – EUR € / Irsko – EUR €",
+        "Fínsko – EUR € / Finsko – EUR €",
+        "Grécko – EUR € / Řecko – EUR €",
+        "Chorvátsko – EUR € / Chorvatsko – EUR €",
+    ],
+    "en": [
+        "Czechia – CZK Kč",
+        "Slovakia – EUR €",
+        "Germany – EUR €",
+        "Austria – EUR €",
+        "Poland – PLN zł",
+        "Hungary – HUF Ft",
+        "United Kingdom – GBP £",
+        "USA – USD $",
+        "Switzerland – CHF ₣",
+        "Denmark – DKK kr",
+        "Sweden – SEK kr",
+        "Norway – NOK kr",
+        "Canada – CAD $",
+        "Japan – JPY ¥",
+        "Netherlands – EUR €",
+        "Belgium – EUR €",
+        "France – EUR €",
+        "Spain – EUR €",
+        "Italy – EUR €",
+        "Ireland – EUR €",
+        "Finland – EUR €",
+        "Greece – EUR €",
+        "Croatia – EUR €",
     ]
 }
 
 COUNTRY_TO_CODE = {
-    "CZ": "CZK", "SK": "EUR", "DE": "EUR", "AT": "EUR", "PL": "PLN",
-    "HU": "HUF", "GB": "GBP", "US": "USD", "CH": "CHF", "DK": "DKK",
-    "SE": "SEK", "NO": "NOK", "CA": "CAD", "JP": "JPY",
-    "NL": "EUR", "FR": "EUR", "ES": "EUR", "IT": "EUR"
+    "Česko – CZK Kč": "CZK",
+    "Slovensko – EUR €": "EUR",
+    "Nemecko – EUR € / Německo – EUR €": "EUR",
+    "Rakúsko – EUR € / Rakousko – EUR €": "EUR",
+    "Poľsko – PLN zł / Polsko – PLN zł": "PLN",
+    "Maďarsko – HUF Ft / Maďarsko – HUF Ft": "HUF",
+    "Veľká Británia – GBP £ / Velká Británie – GBP £": "GBP",
+    "USA – USD $": "USD",
 }
 
-# ==============================
-# FUNKCIE
-# ==============================
+COUNTRY_TO_ISO = {
+    "Česko – CZK Kč": "CZ",
+    "Slovensko – EUR €": "SK",
+    "Nemecko – EUR € / Německo – EUR €": "DE",
+    "Rakúsko – EUR € / Rakousko – EUR €": "AT",
+    "Poľsko – PLN zł / Polsko – PLN zł": "PL",
+    "Maďarsko – HUF Ft / Maďarsko – HUF Ft": "HU",
+    "Veľká Británia – GBP £ / Velká Británie – GBP £": "GB",
+    "USA – USD $": "US"
+}
 
-def get_rate(code):
-    if code == "CZK":
-        return 1.0
-    try:
-        txt = requests.get(CNB_TXT_DAILY, timeout=10).text
-        for line in txt.splitlines()[2:]:
-            parts = line.split("|")
-            if len(parts) >= 5 and parts[3] == code:
-                rate = float(parts[4].replace(",", "."))
-                qty = float(parts[2])
-                return rate / qty
-    except:
+# ---------------------------
+# ISSUECOIN AGENT
+# ---------------------------
+def get_issuecoin_emoji():
+    month = datetime.now().month
+    # Base stick figure
+    head = "🔵"
+    body = " /│\\"
+    legs = " / \\"
+    extra = ""
+    if month in [12, 1, 2]:
+        extra = "🧣" if datetime.now().day < 20 else "🎅"
+    elif month in [3, 4, 5]:
+        extra = "🏃"
+    elif month in [6, 7, 8]:
+        extra = "😎"
+    elif month in [9, 10, 11]:
+        extra = "🍄"
+    return f"{head}\n{body}\n{legs}\n{extra}"
+
+# ---------------------------
+# CNB EXCHANGE RATE
+# ---------------------------
+@st.cache_data(ttl=600)
+def fetch_cnb_txt(date_str: str):
+    url = CNB_TXT_DAILY_AT.format(date=date_str)
+    r = requests.get(url)
+    if r.status_code != 200:
         return None
-    return None
+    return r.text
 
-def check_holiday(country_iso, year, month, day):
-    try:
-        r = requests.get(
-            f"{CALENDARIFIC_URL}?api_key={CALENDARIFIC_KEY}&country={country_iso}&year={year}&month={month}&day={day}",
-            timeout=10
-        ).json()
-        holidays = r.get("response", {}).get("holidays", [])
-        return holidays[0]["name"] if holidays else None
-    except:
-        return None
+def parse_rate(txt: str, code: str):
+    if not txt: return None, None
+    lines = txt.splitlines()
+    date = lines[0].split(" #")[0]
+    for line in lines[2:]:
+        parts = line.split("|")
+        if len(parts) == 5 and parts[3] == code:
+            rate = float(parts[4].replace(",", "."))
+            qty = float(parts[2].replace(",", "."))
+            return rate/qty, date
+    return None, None
 
-# Panáčik IssueCoin podľa sezóny 🎭
-def get_issuecoin_figure():
-    today = datetime.now()
-    m = today.month
+def get_rate_for(code: str, d: dt_date):
+    if code == "CZK": return 1.0, d.isoformat()
+    d_str = d.strftime("%d.%m.%Y")
+    txt = fetch_cnb_txt(d_str)
+    rate, header_date = parse_rate(txt, code)
+    if not rate:
+        txt = requests.get(CNB_TXT_DAILY).text
+        rate, header_date = parse_rate(txt, code)
+    return rate, header_date or d.isoformat()
 
-    if 12 == m and 20 <= today.day <= 26:
-        return "🎅🔵<br> /│\\<br> / \\ "
-    elif m in [12, 1, 2]:
-        return "🧣🔵<br> /│\\<br> / \\ "
-    elif m in [3, 4, 5]:
-        return "🌼🔵<br> /│💪<br> / \\ "
-    elif m in [6, 7, 8]:
-        return "😎🔵<br> /│\\<br> / \\ "
-    elif m in [9, 10, 11]:
-        return "🍄🔵<br> /│\\<br> / \\ "
-    else:
-        return "🔵<br> /│\\<br> / \\ "
+# ---------------------------
+# HOLIDAY CHECK (Calendarific)
+# ---------------------------
+API_KEY = "SspqB3Ivo4c9xnvpAgX6XGyJMdOHMXRE"
 
-# ==============================
-# TITULOK A JAZYK
-# ==============================
-lang = st.sidebar.selectbox("🌐 Jazyk / Language", ["🇸🇰 Slovenčina / Čeština", "🇬🇧 English"])
-language = "sk" if "Slovenčina" in lang else "en"
+def is_holiday(iso_country, d):
+    url = f"https://calendarific.com/api/v2/holidays?&api_key={API_KEY}&country={iso_country}&year={d.year}&month={d.month}&day={d.day}"
+    r = requests.get(url)
+    if r.status_code == 200:
+        data = r.json()
+        holidays = data.get("response", {}).get("holidays", [])
+        return len(holidays) > 0
+    return False
 
-if language == "sk":
-    st.title("💰 Výdavkový denník")
-    st.caption("Tvoje financie pod kontrolou s úsmevom 😊")
-else:
-    st.title("💰 Expense Diary")
-    st.caption("Your finances under control, with a smile 😊")
+# ---------------------------
+# MAIN APP
+# ---------------------------
+st.title(TEXTS[LANG]["title"])
+st.caption(TEXTS[LANG]["subtitle"])
 
-# ==============================
-# VSTUPNÉ POLE
-# ==============================
-col1, col2 = st.columns(2)
-with col1:
-    selected_country = st.selectbox("🌍 Krajina / Country", COUNTRIES[language])
-with col2:
-    selected_date = st.date_input("📅 Dátum / Date", dt_date.today())
+with st.form("form"):
+    d = st.date_input(TEXTS[LANG]["date"], value=dt_date.today())
+    country = st.selectbox(TEXTS[LANG]["country"], COUNTRIES[LANG])
+    amount = st.number_input(TEXTS[LANG]["amount"], min_value=0.0)
+    category = st.selectbox(TEXTS[LANG]["category"], CATEGORIES[LANG])
+    shop = st.text_input(TEXTS[LANG]["shop"])
+    note = st.text_input(TEXTS[LANG]["note"])
+    submit = st.form_submit_button(TEXTS[LANG]["save"])
 
-country_iso = list(COUNTRY_TO_CODE.keys())[list(COUNTRY_TO_CODE.values()).index(COUNTRY_TO_CODE.get("CZ", "CZK"))]
-currency = COUNTRY_TO_CODE.get("CZ", "CZK")
+if submit:
+    code = COUNTRY_TO_CODE.get(country, "CZK")
+    iso = COUNTRY_TO_ISO.get(country, "CZ")
+    rate, rate_date = get_rate_for(code, d)
+    converted = amount * rate if rate else amount
+    st.success(f"{TEXTS[LANG]['saved']} ({converted:.2f} CZK)")
+    if is_holiday(iso, d):
+        st.info(TEXTS[LANG]["holiday_msg"])
+    issue = get_issuecoin_emoji()
+    st.markdown(f"<div class='issuecoin'>{issue}</div>", unsafe_allow_html=True)
 
-# ==============================
-# SUMA, KATEGÓRIA, POZNÁMKA
-# ==============================
-amount = st.number_input("💵 Čiastka / Amount", min_value=0.0, step=10.0)
-category = st.selectbox("🛍️ Kategória / Category", [
-    "Potraviny / Groceries", "Zábava / Entertainment", "Reštaurácie / Restaurants",
-    "Drogéria / Drugstore", "Cestovanie / Travel", "Bývanie / Housing", "Ostatné / Other"
-])
-note = st.text_input("📝 Poznámka / Note")
-
-# ==============================
-# AI AGENT ISSUECOIN
-# ==============================
-issuecoin_html = f"""
-<div style='text-align:center;'>
-    <div style='font-size:40px; line-height:1.1;'>{get_issuecoin_figure()}</div>
-</div>
-"""
-
-def show_issuecoin_message(msg):
-    st.markdown(f"""
-    <div style='display:flex; align-items:center; gap:20px;'>
-        {issuecoin_html}
-        <div style='font-size:18px; background:#f0f2f6; padding:10px 15px; border-radius:10px;'>{msg}</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-# ==============================
-# HLÁŠKY PODĽA SITUÁCIE
-# ==============================
-holiday = check_holiday("CZ", selected_date.year, selected_date.month, selected_date.day)
-
-if holiday:
-    msg = f"🎉 Dnes je sviatok ({holiday})! Oddýchni si a uži deň! 😊" if language == "sk" else f"🎉 It's a holiday today ({holiday})! Enjoy and relax! 😊"
-    show_issuecoin_message(msg)
-elif amount > 0:
-    if category in ["Zábava / Entertainment", "Reštaurácie / Restaurants"]:
-        if amount >= 1000:
-            msg = random.choice([
-                "🎉 Vyzerá to na super večer! Uži si to! 😄",
-                "🍽️ Dobré jedlo, dobrá nálada!",
-                "😋 Odmena musí byť, hlavne po dobrom týždni!"
-            ])
-        else:
-            msg = None
-    else:
-        if amount >= 6500:
-            msg = "💸 Uff, to už je slušná suma! Možno mal IssueCoin pravdu 😅"
-        elif amount >= 2500:
-            msg = "💡 Dobrý nákup, ale skús si dať pozor na rozpočet 😉"
-        else:
-            msg = None
-
-    if msg:
-        show_issuecoin_message(msg)
-
-# ==============================
-# GDPR INFO
-# ==============================
-gdpr_msg = "🔒 Tvoje údaje sa nikam neposielajú – všetko zostáva len u teba 💚" if language == "sk" else "🔒 Your data never leaves your device – everything stays safely with you 💚"
-st.info(gdpr_msg)
-
-# ==============================
-# ULOŽENIE
-# ==============================
-if st.button("💾 Uložiť / Save"):
-    rate = get_rate(currency)
-    st.success(f"Záznam uložený. Kurz {currency}: {rate:.2f} CZK" if language == "sk" else f"Record saved. Rate {currency}: {rate:.2f} CZK")
+st.markdown(f"<p style='text-align:center;color:gray;font-size:14px'>{TEXTS[LANG]['gdpr']}</p>", unsafe_allow_html=True)
