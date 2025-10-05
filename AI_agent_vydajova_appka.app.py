@@ -209,21 +209,35 @@ st.write(f"💱 Prepočítaná hodnota v CZK: **{converted:.2f} Kč**")
 def show_issuecoin_message():
     if messages_df.empty:
         return
-    if "Slovensky" in language:
-        msg_col = "Hláška (SK_CZ)"
-    else:
-        msg_col = "Message (EN)"
-    cat_col = "Kategória/Kategorie (SK_CZ)"
-    row = messages_df[messages_df[cat_col] == category]
-    if not row.empty:
-        msg = row[msg_col].sample(1).iloc[0]
-        st.markdown(f"""
-        <div class="issuecoin-container">
-            <img src="obrazek_IssuaCoin_by_Deny.JPG" class="issuecoin-img" />
-            <div class="issuecoin-text">{msg}</div>
-        </div>
-        """, unsafe_allow_html=True)
 
+    # výber správneho jazykového stĺpca
+    if "slovensky" in language.lower():
+        msg_col = "Hláška_SK_CZ"
+        cat_col = "Kategória/kategorie (SK_CZ)"
+    else:
+        msg_col = "Hláška_EN"
+        cat_col = "Category (EN)"
+
+    # výber správneho riadku podľa kategórie
+    if cat_col in messages_df.columns and msg_col in messages_df.columns:
+        row = messages_df[messages_df[cat_col] == category]
+        if not row.empty:
+            msg = row[msg_col].sample(1).iloc[0]
+            st.markdown(f"""
+            <div class="issuecoin-container">
+                <img src="obrazek_IssueCoin_by_Deny.JPG" class="issuecoin-img" />
+                <div class="issuecoin-text">{msg}</div>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.warning("⚠️ Pre túto kategóriu zatiaľ nemám hlášku.")
+    else:
+        st.error("❌ CSV nemá očakávané názvy stĺpcov.")
+
+
+# zobrazenie hlášky, ak je zadaná suma
 if amount > 0:
     show_issuecoin_message()
+
+
 
