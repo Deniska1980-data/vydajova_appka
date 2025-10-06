@@ -6,7 +6,7 @@
 ---
 
 ## 🇬🇧 TL;DR (Short English summary)
-Bilingual expense tracker (CZ/SK ↔ EN) built with **Streamlit**.  
+Bilingual expense tracker (SK/CZ ↔ EN) built with **Streamlit**.  
 - **RAG-driven AI agent “IssueCoin by Deny”**: friendly tips, seasonal/holiday messages, gentle nudges to fill missing fields.  
 - **Currencies**: CZK base = 1:1; other currencies via **CNB daily rates** (with graceful fallback).  
 - **Holidays & observances**: **Calendarific (aka Calendarium)** + curated fallback list; clean language switching (no mixing).  
@@ -59,7 +59,6 @@ Bilingválna appka vo **Streamlite** na správu výdavkov.
 **🔒 Súkromie**
 
 Žiadny backend, žiadna databáza.
-
 Údaje o výdavkoch žijú len vo vašom prehliadači (Streamlit Session State).
 
 **🗺️ Roadmap**
@@ -72,15 +71,18 @@ Viac “RAG nápovedy” pre rozumné znižovanie výdavkov
 **👩‍💻 Autor & agent**
 
 Deny – návrh a implementácia
-
 IssueCoin by Deny – priateľský AI agent s RAG, ktorý dohliada na sviatky a dobré návyky
 
 **📸 Screenshots**
 
 ![RAG – prehľad](/obrazky_vytah_appka/RAG_obrazek1.JPG)
 
+
 ![IssueCoin – správny obrázok](/obrazky_vytah_appka/spravny_obrazek1.JPG)
 
+
+## License
+MIT — see [LICENSE](LICENSE) for details.
 
 ## 🛠️ Lokálne spustenie (voliteľné)
 <details>
@@ -97,6 +99,4 @@ streamlit run app.py        # alebo test_vydajova_appka_app.py
 # .streamlit/secrets.toml
 CAL_API_KEY = "tvoj_calendarific_api_key"
 
-## License
-MIT — see [LICENSE](LICENSE) for details.
 
