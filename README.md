@@ -16,9 +16,6 @@
   </a>
 </p>
 
-
-**Obsah:** [Úvod](#-výdavkový-denník--výdajový-deník) · [Funkcie](#funkcie) · [API](#api) · [Ako spustiť](#spustenie-lokálne) · [Screenshoty](#screenshots) · [Licencia](#licencia)
-
 ---
 
 ![Hlavná ukážka](obrazky_vytah_appka/spravny_obrazek1.JPG)
@@ -74,6 +71,11 @@ IssueCoin – pravidlá + RAG kontext (kategórie, prahy, sviatky, sezónne okn�
 Kurzy ČNB – requests + cache (@st.cache_data, ~10 min)
 Calendarific – requests + cache (~60 min), + lokálna fallback tabuľka pre vybrané krajiny
 Graf & export – Altair (sumy podľa kategórie) + CSV download
+
+
+Tech stack
+**Tech:** Streamlit · Python · pandas · Altair · requests · RAG (lokálne dáta + API: ČNB, Calendarific)
+
 
 Licencia
 Projekt je pod licenciou MIT [LICENSE](LICENSE)
