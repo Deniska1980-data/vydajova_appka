@@ -55,13 +55,14 @@ Tento prístup je rýchly, stabilný a predvídateľný pre produkčné UI.
 | **Calendarific** | Štátne sviatky + observances | Rozlišujem **public holiday** vs. **observance/religious**. Pre SK/CZ mapujem známe sviatky (preklad), ak API nič nevráti, mám **lokálny fallback**. |
 
 > API kľúč pre Calendarific je uložený v `st.secrets`.
+> 
 ##Stručná architektúra
 
-UI (Streamlit) – i18n slovníky (SK/CZ + EN)
-IssueCoin – pravidlá + RAG kontext (kategórie, prahy, sviatky, sezónne okná)
-Kurzy ČNB – requests + cache (@st.cache_data, ~10 min)
-Calendarific – requests + cache (~60 min), + lokálna fallback tabuľka pre vybrané krajiny
-Graf & export – Altair (sumy podľa kategórie) + CSV download
+- UI (Streamlit) – i18n slovníky (SK/CZ + EN)
+- IssueCoin – pravidlá + RAG kontext (kategórie, prahy, sviatky, sezónne okná)
+- Kurzy ČNB – requests + cache (@st.cache_data, ~10 min)
+- Calendarific – requests + cache (~60 min), + lokálna fallback tabuľka pre vybrané krajiny
+- Graf & export – Altair (sumy podľa kategórie) + CSV download
 
 ---
 ##Tech: Streamlit · Python · pandas · Altair · requests · RAG (lokálne dáta + API: ČNB, Calendarific)
