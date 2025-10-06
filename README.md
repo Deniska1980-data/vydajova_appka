@@ -47,27 +47,32 @@
 Tento prístup je rýchly, stabilný a predvídateľný pre produkčné UI.
 
 ---
+## API
 
-## 🔌 API
+| Služba | Na čo slúži | Poznámky |
+|---|---|---|
+| **Česká národná banka (ČNB)** | Denné textové kurzy | Použije sa kurz k zvolenému dátumu; ak chýba, vezme sa **posledný dostupný**. Všetko sa konvertuje do **CZK (CZK=1:1)**. |
+| **Calendarific** | Štátne sviatky + observances | Rozlišujem **public holiday** vs. **observance/religious**. Pre SK/CZ mapujem známe sviatky (preklad), ak API nič nevráti, mám **lokálny fallback**. |
 
-- **Česká národná banka (ČNB)** — denné textové kurzy  
-  Použitý kurz k zvolenému dátumu (ak chýba → posledný dostupný); vždy konverzia do CZK.
-- **Calendarific** — štátne sviatky + observances  
-  Rozlišujem *public holiday* vs. *observance*; pre SK/CZ mapujem známe sviatky; ak API nič nevráti, použije sa lokálny fallback.
+> API kľúč pre Calendarific je uložený v `st.secrets`.
 
-> API kľúč na Calendarific je uložený v `st.secrets`.
+<details>
+<summary>Konfigurácia kľúča (skryté)</summary>
 
-🗂️ Stručná architektúra
+```toml
+# .streamlit/secrets.toml
+CAL_API_KEY = "tvoj_calendarific_api_key"
 
-Streamlit UI
-i18n slovníky (SK/CZ + EN)
-IssueCoin (pravidlá + RAG kontext)
-Altair graf + CSV export
-Cache: @st.cache_data (ČNB ~10 min, Calendarific ~60 min)
-Fallbacky: posledný kurz ČNB; lokálna tabuľka sviatkov pre vybrané krajiny
 
-📜 Licencia
+Stručná architektúra
 
+UI (Streamlit) – i18n slovníky (SK/CZ + EN)
+IssueCoin – pravidlá + RAG kontext (kategórie, prahy, sviatky, sezónne okná)
+Kurzy ČNB – requests + cache (@st.cache_data, ~10 min)
+Calendarific – requests + cache (~60 min), + lokálna fallback tabuľka pre vybrané krajiny
+Graf & export – Altair (sumy podľa kategórie) + CSV download
+
+Licencia
 Projekt je pod licenciou MIT [LICENSE](LICENSE)
 
 ---
@@ -84,6 +89,3 @@ python -m venv .venv
 pip install -r requirements.txt
 streamlit run test_vydajova_appka_app.py
 CAL_API_KEY = "tvoj_calendarific_api_key"
-
-
-
