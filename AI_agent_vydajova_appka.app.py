@@ -281,7 +281,6 @@ def get_rate_for(code: str, d: dt_date):
     else:
         rdate = datetime.strptime(header, "%d.%m.%Y").date().isoformat()
     return rate, rdate
-
 # ───────────────────────────────────────────────────────────────────────────────
 # Calendarific helpers – správne rozlíšené sviatky (štátne, cirkevné, pamätné)
 # ───────────────────────────────────────────────────────────────────────────────
@@ -289,7 +288,7 @@ def get_rate_for(code: str, d: dt_date):
 def get_holiday_name(date_obj: dt_date, iso2: str, lang: str):
     """
     Načíta sviatky pre daný dátum a krajinu z Calendarific API.
-    Vracia preložený názov sviatku podľa jazyka (SK/EN) a typu (sviatok/pamätný deň).
+    Vracia správny jazykový výstup (bez miešania jazykov).
     """
     try:
         params = {
@@ -307,21 +306,20 @@ def get_holiday_name(date_obj: dt_date, iso2: str, lang: str):
         if not holidays:
             return KNOWN_PUBLIC_HOLIDAYS.get((iso2, date_obj.strftime("%m-%d")), None)
 
-        # Rozdelenie podľa typu
         public_names, observance_names = [], []
         for h in holidays:
-            name = h.get("name", "").strip()
+            name_en = h.get("name", "").strip()
             types = h.get("type", [])
             if any(t in ["National holiday", "Public holiday"] for t in types):
-                public_names.append(name)
+                public_names.append(name_en)
             elif any(t in ["Observance", "Religious", "Local holiday"] for t in types):
-                observance_names.append(name)
+                observance_names.append(name_en)
 
         all_names = public_names + observance_names
         if not all_names:
             return KNOWN_PUBLIC_HOLIDAYS.get((iso2, date_obj.strftime("%m-%d")), None)
 
-        # Preklady sviatkov
+        # Preklady do SK/CZ
         trans_sk = {
             "New Year's Day": "Nový rok",
             "Epiphany": "Zjavenie Pána (Traja králi)",
@@ -341,22 +339,17 @@ def get_holiday_name(date_obj: dt_date, iso2: str, lang: str):
             "Day of Slovak National Uprising": "Výročie SNP",
             "Our Lady of Sorrows": "Sedembolestná Panna Mária",
             "All Souls' Day": "Pamiatka zosnulých (Dušičky)",
-            # Pamätné
-            "Teacher's Day": "Deň učiteľov",
-            "Mother's Day": "Deň matiek",
-            "Father's Day": "Deň otcov",
-            "Children's Day": "Deň detí",
-            "Armed Forces Day": "Deň ozbrojených síl SR",
-            "Constitution Day": "Deň ústavy SR",
         }
 
-        # Výber názvu podľa jazyka
-        if lang == "sk":
-            translated = [trans_sk.get(n, n) for n in all_names]
+        # Ak je jazyk slovenský alebo český → použijeme preklad (ak existuje)
+        if lang in ["sk", "cz"]:
+            translated = [trans_sk.get(n, KNOWN_PUBLIC_HOLIDAYS.get((iso2, date_obj.strftime("%m-%d")), n)) for n in all_names]
             if observance_names and not public_names:
                 return f"📅 Dnes je pamätný alebo cirkevný deň: {', '.join(translated)}"
             else:
                 return f"🎉 Dnes je sviatok: {', '.join(translated)}"
+
+        # Inak (napr. EN) → anglický názov
         else:
             if observance_names and not public_names:
                 return f"📅 Today is a memorial or religious observance: {', '.join(all_names)}"
@@ -365,8 +358,7 @@ def get_holiday_name(date_obj: dt_date, iso2: str, lang: str):
 
     except Exception as e:
         print("Holiday check error:", e)
-        return KNOWN_PUBLIC_HOLIDAYS.get((iso2, date_obj.strftime('%m-%d')), None)
-
+        return KNOWN_PUBLIC_HOLIDAYS.get((iso2, date_obj.strftime("%m-%d")), None)
 # ───────────────────────────────────────────────────────────────────────────────
 # Fallback – ak Calendarific nič nevráti
 # ───────────────────────────────────────────────────────────────────────────────
@@ -594,6 +586,7 @@ if not df.empty:
         file_name=file_name,
         mime="text/csv",
     )
+
 
 
 
