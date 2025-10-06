@@ -16,6 +16,9 @@
   </a>
 </p>
 
+
+**Obsah:** [Úvod](#-výdavkový-denník--výdajový-deník) · [Funkcie](#funkcie) · [API](#api) · [Ako spustiť](#spustenie-lokálne) · [Screenshoty](#screenshots) · [Licencia](#licencia)
+
 ---
 
 ![Hlavná ukážka](obrazky_vytah_appka/spravny_obrazek1.JPG)
