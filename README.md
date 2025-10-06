@@ -6,6 +6,16 @@
 > Bilingválny výdavkový denník (SK/CZ + EN) v Streamlite s AI agentom **IssueCoin**.  
 > Využíva **RAG** nad lokálnymi znalosťami + **2 externé API** (ČNB denné kurzy, Calendarific sviatky), má sezónne hlášky a beží **GDPR-friendly** (dáta ostávajú lokálne v session).
 
+<p align="center">
+  <a href="https://vydajovaappka-yumqiidaqwjyf5kcauxygh.streamlit.app/">
+    <img
+      src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Fvydajovaappka-yumqiidaqwjyf5kcauxygh.streamlit.app%2F"
+      alt="QR – otvor aplikáciu"
+      width="220" height="220"
+    />
+  </a>
+</p>
+
 ---
 
 ![Hlavná ukážka](obrazky_vytah_appka/spravny_obrazek1.JPG)
