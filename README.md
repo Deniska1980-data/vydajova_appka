@@ -72,9 +72,7 @@ Kurzy ČNB – requests + cache (@st.cache_data, ~10 min)
 Calendarific – requests + cache (~60 min), + lokálna fallback tabuľka pre vybrané krajiny
 Graf & export – Altair (sumy podľa kategórie) + CSV download
 
-
-Tech stack
-**Tech:** Streamlit · Python · pandas · Altair · requests · RAG (lokálne dáta + API: ČNB, Calendarific)
+Tech: Streamlit · Python · pandas · Altair · requests · RAG (lokálne dáta + API: ČNB, Calendarific)
 
 
 Licencia
