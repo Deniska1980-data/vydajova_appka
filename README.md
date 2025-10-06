@@ -97,7 +97,6 @@ streamlit run app.py        # alebo test_vydajova_appka_app.py
 # .streamlit/secrets.toml
 CAL_API_KEY = "tvoj_calendarific_api_key"
 
+## License
+MIT — see [LICENSE](LICENSE) for details.
 
-📄 License
-
-MIT
