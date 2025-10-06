@@ -82,10 +82,6 @@ IssueCoin by Deny – priateľský AI agent s RAG, ktorý dohliada na sviatky a 
 ![IssueCoin – správny obrázok](/obrazky_vytah_appka/spravny_obrazek1.JPG)
 
 
-📄 License
-
-MIT
-
 ## 🛠️ Lokálne spustenie (voliteľné)
 <details>
 <summary>Klikni pre návod</summary>
@@ -100,3 +96,8 @@ streamlit run app.py        # alebo test_vydajova_appka_app.py
 
 # .streamlit/secrets.toml
 CAL_API_KEY = "tvoj_calendarific_api_key"
+
+
+📄 License
+
+MIT
