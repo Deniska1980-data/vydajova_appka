@@ -1,101 +1,79 @@
-# 💸 Food Expenses App / Výdavkový denník
+# 💰 Výdavkový denník / Výdajový deník — s AI agentom IssueCoin
 
-[▶️ Spustiť aplikáciu online](https://vydajovaappka-yumqiidaqwjyf5kcauxygh.streamlit.app/)  
-*(GDPR-friendly: dáta ostávajú len lokálne v prehliadači.)*
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit-brightgreen)](https://vydajovaappka-yumqiidaqwjyf5kcauxygh.streamlit.app/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
----
-
-## 🇬🇧 TL;DR (Short English summary)
-Bilingual expense tracker (SK/CZ ↔ EN) built with **Streamlit**.  
-- **RAG-driven AI agent “IssueCoin by Deny”**: friendly tips, seasonal/holiday messages, gentle nudges to fill missing fields.  
-- **Currencies**: CZK base = 1:1; other currencies via **CNB daily rates** (with graceful fallback).  
-- **Holidays & observances**: **Calendarific (aka Calendarium)** + curated fallback list; clean language switching (no mixing).  
-- Charts, CSV export, categories, countries, and smart messages tailored to seasonality (Xmas, New Year, Easter, Black Friday, etc.).
+> Bilingválny výdavkový denník (SK/CZ + EN) v Streamlite s AI agentom **IssueCoin**.  
+> Využíva **RAG** nad lokálnymi znalosťami + **2 externé API** (ČNB denné kurzy, Calendarific sviatky), má sezónne hlášky a beží **GDPR-friendly** (dáta ostávajú lokálne v session).
 
 ---
 
-## 🇸🇰/🇨🇿 Stručne
-Bilingválna appka vo **Streamlite** na správu výdavkov.  
-- **RAG agent „IssueCoin by Deny“**: priateľské tipy, sezónne/sviatočné hlášky, pripomenutie chýbajúcich polí (dátum, krajina, suma, obchod).  
-- **Meny**: CZK = 1:1; ostatné z **denných kurzov ČNB** (s fallbackom).  
-- **Sviatky & pamätné/cirkevné dni**: **Calendarific/Calendarium** + náš fallback zoznam; jazyk sa **nemieša**.  
-- Graf výdavkov, export CSV, kategórie, krajiny, sviatočné „moods“ (Vianoce, Silvester, Veľká noc, Black Friday).
-
----
-
-## 🌟 Funkcie / Features
-- 🌐 **Bilingválna UI** (Slovensky/Česky ↔ English) – prepínač priamo v appke  
-- 💱 **Kurzy mien z ČNB** (TXT endpoint) + automatický fallback na posledný platný kurz  
-- 📅 **Sviatky a observances** z **Calendarific (Calendarium)** + vlastný fallback (SK, CZ, PL, DE, HU, …)  
-- 🤖 **RAG AI agent – IssueCoin by Deny**  
-  - upozorní na chýbajúce polia pred uložením (dátum, krajina, suma, shop)  
-  - po uložení povie krátku, kontextovú hlášku k **aktuálnej kategórii** (nikdy „mimo tému“)  
-  - sviatočné módy:  
-    - **20–27 Dec** Vianočne ladené rady  
-    - **29–31 Dec** Silvester & “wrap-up”  
-    - **15–25 Nov** Black-Friday nákupy s rozvahou  
-    - **Zelený štvrtok → Veľkonočný pondelok** láskavé veľkonočné hlášky  
-- 📊 **Graf výdavkov** a **CSV export**  
-- 🔐 **GDPR-friendly**: všetko **lokálne** v prehliadači (Session State)
-
----
-
-## 🧠 Ako funguje RAG v appke
-- **Retriever**: jednoduché pravidlá + drobná “znalosť” (kategórie, sezónne okná, mapa sviatkov)  
-- **Augmentácia**: k udalosti (dátum+krajina+kategória) priložíme kontext (či je sviatok, aká sezóna, koľko sa už v kategórii minulo vs. prah).  
-- **Generovanie**: IssueCoin vyberie vhodný, **neútočný** a **k veci** tip/pochvalu; v SK/CZ alebo EN podľa UI.  
-- **Bez miešania jazykov**: preklady sviatkov sú kurátorsky udržiavané (napr. *Maundy Thursday → Zelený štvrtok*, *Easter Monday → Veľkonočný pondelok*).
-
----
-
-## 🔌 Integrované API
-- **ČNB Daily FX** – `denni_kurz.txt` (+ `?date=DD.MM.YYYY`)  
-  Žiadny API kľúč netreba; parsujeme TXT a držíme fallback na posledný známy kurz.  
-- **Calendarific (Calendarium)** – sviatky, pamätné a cirkevné dni  
-  - požaduje **API key**  
-  - vybrané sviatky pre SK/CZ sú **preložené**; medzinárodné cirkevné/regionálne nechávame **v origináli**, aby nevznikali zvláštne preklady  
-  - ak API nevráti nič, použijeme vlastný **fallback** (SK, CZ, PL, DE, HU, GB…)
-
-**🔒 Súkromie**
-
-Žiadny backend, žiadna databáza.
-Údaje o výdavkoch žijú len vo vašom prehliadači (Streamlit Session State).
-
-**🗺️ Roadmap**
-
-Mobilné “add-purchase” mikro-UI
-Týždenné/mesačné rozpočty a prehľady
-Viac krajín/sviatkových fallbackov
-Viac “RAG nápovedy” pre rozumné znižovanie výdavkov
-
-**👩‍💻 Autor & agent**
-
-Deny – návrh a implementácia
-IssueCoin by Deny – priateľský AI agent s RAG, ktorý dohliada na sviatky a dobré návyky
-
-**📸 Screenshots**
 ![Hlavná ukážka](obrazky_vytah_appka/spravny_obrazek1.JPG)
+
+## ✨ Funkcie
+
+- **Bilingválna appka**: prepínač *Slovensky/Česky* ↔ *English* (texty sú oddelené, nemiešajú sa).
+- **Meny**: všetko sa prepočítava do CZK (CZK=1:1), ostatné meny podľa **denných kurzov ČNB** (s fallbackom na posledný dostupný kurz).
+- **Sviatky**: **Calendarific** (public holiday vs. observance), pre SK/CZ vlastné preklady + lokálny fallback.
+- **AI agent IssueCoin**:
+  - pred uložením upozorní na chýbajúce polia (dátum, suma, obchod…),
+  - po uložení dá krátku, priateľskú spätnú väzbu k **danej kategórii** (bez „mimo témy“),
+  - upozorní na **graf** nižšie a zhrnie **dnešný súčet a počet nákupov**.
+- **Sezónne okná** (špeciálny tón hlášok):  
+  Vianoce **20.–27.12.**, Silvester **29.–31.12.**, januárové výpredaje, **Black Friday 15.–25.11.**, **Veľká noc: Zelený štvrtok (Maundy Thursday) → Veľkonočný pondelok (Easter Monday)**.
+- **Prehľad**: Altair stĺpcový graf podľa kategórií + **CSV export**.  
+- **GDPR-friendly**: bez serverového úložiska; dáta ostávajú u používateľa (session).
+
+---
+
+## 🧠 RAG – pragmaticky
 
 ![Ako funguje RAG](obrazky_vytah_appka/RAG_obrazek1.JPG)
 
+- **Retrieval**: fakty beriem z lokálnej znalostnej bázy (kategórie, prahy, sezónne okná), z **ČNB** a **Calendarific** (s fallback tabuľkou).
+- **Augmentation**: poskladám kontext (jazyk, dátum, krajina, kategória, sviatok/sezóna).
+- **Generation**: krátke, ľudské hlášky IssueCoin-a – k veci, bez miešania tém, vždy slušné a neútočné.
 
-## License
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![Streamlit App](https://img.shields.io/badge/Live%20Demo-Streamlit-brightgreen)](https://vydajovaappka-yumqiidaqwjyf5kcauxygh.streamlit.app/)
+Tento prístup je rýchly, stabilný a predvídateľný pre produkčné UI.
 
-## 🛠️ Lokálne spustenie (voliteľné)
-<details>
-<summary>Klikni pre návod</summary>
+---
 
-**Požiadavky:** Python 3.10+
+## 🔌 API
+
+- **Česká národná banka (ČNB)** — denné textové kurzy  
+  Použitý kurz k zvolenému dátumu (ak chýba → posledný dostupný); vždy konverzia do CZK.
+- **Calendarific** — štátne sviatky + observances  
+  Rozlišujem *public holiday* vs. *observance*; pre SK/CZ mapujem známe sviatky; ak API nič nevráti, použije sa lokálny fallback.
+
+> API kľúč na Calendarific je uložený v `st.secrets`.
+
+🗂️ Stručná architektúra
+
+Streamlit UI
+i18n slovníky (SK/CZ + EN)
+IssueCoin (pravidlá + RAG kontext)
+Altair graf + CSV export
+Cache: @st.cache_data (ČNB ~10 min, Calendarific ~60 min)
+Fallbacky: posledný kurz ČNB; lokálna tabuľka sviatkov pre vybrané krajiny
+
+📜 Licencia
+
+Projekt je pod licenciou MIT [LICENSE](LICENSE)
+
+---
+
+## 🖥️ Lokálne spustenie
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-streamlit run app.py        # alebo test_vydajova_appka_app.py
+# Windows:
+.venv\Scripts\activate
+# macOS / Linux:
+# source .venv/bin/activate
 
-# .streamlit/secrets.toml
+pip install -r requirements.txt
+streamlit run test_vydajova_appka_app.py
 CAL_API_KEY = "tvoj_calendarific_api_key"
+
 
 
