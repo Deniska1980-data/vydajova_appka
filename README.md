@@ -86,13 +86,17 @@ IssueCoin by Deny – priateľský AI agent s RAG, ktorý dohliada na sviatky a 
 
 MIT
 
-**Konfigurácia kľúča:**
-```toml
-# .streamlit/secrets.toml
-CAL_API_KEY = "tvoj_calendarific_api_key"
+## 🛠️ Lokálne spustenie (voliteľné)
+<details>
+<summary>Klikni pre návod</summary>
 
-**Lokálne spustenie**
+**Požiadavky:** Python 3.10+
+
+```bash
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 streamlit run app.py        # alebo test_vydajova_appka_app.py
+
+# .streamlit/secrets.toml
+CAL_API_KEY = "tvoj_calendarific_api_key"
