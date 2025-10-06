@@ -78,6 +78,7 @@ IssueCoin by Deny – priateľský AI agent s RAG, ktorý dohliada na sviatky a 
 **📸 Screenshots**
 
 ![RAG – prehľad](/obrazky_vytah_appka/RAG_obrazek1.JPG)
+![IssueCoin – správny obrázok](/obrazky_vytah_appka/spravny_obrazek1.JPG)
 
 
 📄 License
