@@ -283,11 +283,15 @@ def get_rate_for(code: str, d: dt_date):
     return rate, rdate
 
 # ───────────────────────────────────────────────────────────────────────────────
-# Calendarific helpers
+# Calendarific helpers – rozlíšenie štátnych a cirkevných sviatkov
 # ───────────────────────────────────────────────────────────────────────────────
 @st.cache_data(ttl=3600)
 def get_holiday_name(date_obj: dt_date, iso2: str, lang: str):
-    """Return a holiday name for given date & country or None. lang: 'sk' or 'en' (we'll request EN from API)."""
+    """
+    Načíta sviatky z Calendarific API pre danú krajinu a dátum.
+    Rozlišuje 'Public' (štátne) a 'Religious' (cirkevné) sviatky.
+    Vráti názov sviatku alebo None.
+    """
     try:
         params = {
             "api_key": CAL_API_KEY,
@@ -299,12 +303,24 @@ def get_holiday_name(date_obj: dt_date, iso2: str, lang: str):
         r = requests.get(CAL_BASE, params=params, timeout=10)
         if r.status_code != 200:
             return None
+
         data = r.json()
-        hols = data.get("response", {}).get("holidays", [])
-        if not hols:
+        holidays = data.get("response", {}).get("holidays", [])
+        if not holidays:
             return None
-        name_en = hols[0].get("name", "").strip()
-        # Hand translation of most common holidays to SK/CZ twin form
+
+        public_holidays = []
+        religious_holidays = []
+
+        for h in holidays:
+            name_en = h.get("name", "").strip()
+            types = h.get("type", [])
+            if "Public" in types or "National" in types:
+                public_holidays.append(name_en)
+            elif "Religious" in types or "Christian" in types or "Catholic" in types:
+                religious_holidays.append(name_en)
+
+        # Preklady pre známe sviatky (zostávajú rovnaké)
         translate = {
             "Christmas Eve": "Štedrý večer / Štědrý večer (Vianoce / Vánoce)",
             "Christmas Day": "Prvý sviatok vianočný / 1. svátek vánoční",
@@ -319,13 +335,19 @@ def get_holiday_name(date_obj: dt_date, iso2: str, lang: str):
             "Statehood Day": "Deň štátnosti / Den státnosti",
             "Harvest Festival": "Dožinky / Jesenný festival",
         }
-        if lang == "sk":
-            return translate.get(name_en, name_en)
-        else:
-            return name_en
-    except:
-        return None
 
+        # Vráti výsledok podľa typu
+        if public_holidays:
+            hol = public_holidays[0]
+            return f"🎉 {'Štátny sviatok / Public holiday: ' + translate.get(hol, hol) if lang == 'sk' else 'Public holiday: ' + hol}"
+        elif religious_holidays:
+            hol = religious_holidays[0]
+            return f"⛪ {'Cirkevný sviatok / Religious holiday: ' + translate.get(hol, hol) if lang == 'sk' else 'Religious holiday: ' + hol}"
+        else:
+            return None
+    except Exception as e:
+        print("Holiday API error:", e)
+        return None
 # ───────────────────────────────────────────────────────────────────────────────
 # IssueCoin avatar & messages
 # ───────────────────────────────────────────────────────────────────────────────
@@ -499,6 +521,7 @@ if not df.empty:
         file_name=file_name,
         mime="text/csv",
     )
+
 
 
 
