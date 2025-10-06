@@ -19,6 +19,7 @@
 ---
 
 ![Hlavná ukážka](obrazky_vytah_appka/spravny_obrazek1.JPG)
+
 ![IssueCoin – sviatočné hlášky]
 
 ## ✨ Funkcie
@@ -40,6 +41,7 @@
 ## 🧠 RAG – pragmaticky
 
 ![Ako funguje RAG](obrazky_vytah_appka/RAG_obrazek1.JPG)
+
 ![IssueCoin – upozorňuje na doplnenie údajov]
 
 - **Retrieval**: fakty beriem z lokálnej znalostnej bázy (kategórie, prahy, sezónne okná), z **ČNB** a **Calendarific** (s fallback tabuľkou).
