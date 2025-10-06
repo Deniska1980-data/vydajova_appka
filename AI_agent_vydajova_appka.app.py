@@ -283,15 +283,11 @@ def get_rate_for(code: str, d: dt_date):
     return rate, rdate
 
 # ───────────────────────────────────────────────────────────────────────────────
-# Calendarific helpers – rozlíšenie štátnych a cirkevných sviatkov
+# Calendarific helpers (rozšírené o Observance + fallback pre vybrané krajiny)
 # ───────────────────────────────────────────────────────────────────────────────
 @st.cache_data(ttl=3600)
 def get_holiday_name(date_obj: dt_date, iso2: str, lang: str):
-    """
-    Načíta sviatky z Calendarific API pre danú krajinu a dátum.
-    Rozlišuje 'Public' (štátne) a 'Religious' (cirkevné) sviatky.
-    Vráti názov sviatku alebo None.
-    """
+    """Return all types of holidays (national, public, observance) for given date & country."""
     try:
         params = {
             "api_key": CAL_API_KEY,
@@ -303,51 +299,117 @@ def get_holiday_name(date_obj: dt_date, iso2: str, lang: str):
         r = requests.get(CAL_BASE, params=params, timeout=10)
         if r.status_code != 200:
             return None
-
         data = r.json()
         holidays = data.get("response", {}).get("holidays", [])
         if not holidays:
-            return None
+            return KNOWN_PUBLIC_HOLIDAYS.get((iso2, date_obj.strftime("%m-%d")), None)
 
-        public_holidays = []
-        religious_holidays = []
-
+        # Získame všetky názvy sviatkov, vrátane observance
+        names = []
         for h in holidays:
             name_en = h.get("name", "").strip()
-            types = h.get("type", [])
-            if "Public" in types or "National" in types:
-                public_holidays.append(name_en)
-            elif "Religious" in types or "Christian" in types or "Catholic" in types:
-                religious_holidays.append(name_en)
+            h_type = h.get("type", [])
+            if any(t in ["National holiday", "Public holiday", "Observance"] for t in h_type):
+                names.append(name_en)
 
-        # Preklady pre známe sviatky (zostávajú rovnaké)
+        if not names:
+            return KNOWN_PUBLIC_HOLIDAYS.get((iso2, date_obj.strftime("%m-%d")), None)
+
+        # Pridaj preklad známych sviatkov do SK/CZ
         translate = {
-            "Christmas Eve": "Štedrý večer / Štědrý večer (Vianoce / Vánoce)",
-            "Christmas Day": "Prvý sviatok vianočný / 1. svátek vánoční",
-            "St. Stephen's Day": "Druhý sviatok vianočný / 2. svátek vánoční",
-            "New Year's Day": "Nový rok / Nový rok",
-            "Epiphany": "Zjavenie Pána (Traja králi) / Zjevení Páně (Tři králové)",
-            "Good Friday": "Veľký piatok / Velký pátek",
-            "Easter Monday": "Veľkonočný pondelok / Velikonoční pondělí",
-            "Labor Day": "Sviatok práce / Svátek práce",
-            "Independence Day": "Deň nezávislosti / Den nezávislosti",
-            "All Saints' Day": "Sviatok všetkých svätých / Svátek Všech svatých",
-            "Statehood Day": "Deň štátnosti / Den státnosti",
-            "Harvest Festival": "Dožinky / Jesenný festival",
+            "New Year's Day": "Nový rok",
+            "Epiphany": "Zjavenie Pána (Traja králi)",
+            "Good Friday": "Veľký piatok",
+            "Easter Monday": "Veľkonočný pondelok",
+            "Labor Day": "Sviatok práce",
+            "Liberation Day": "Deň víťazstva nad fašizmom",
+            "Saints Cyril and Methodius Day": "Sviatok sv. Cyrila a Metoda",
+            "Jan Hus Day": "Deň upálenia majstra Jána Husa",
+            "National Day": "Deň ústavy",
+            "All Saints' Day": "Sviatok všetkých svätých",
+            "Christmas Eve": "Štedrý deň",
+            "Christmas Day": "Prvý sviatok vianočný",
+            "St. Stephen's Day": "Druhý sviatok vianočný",
         }
 
-        # Vráti výsledok podľa typu
-        if public_holidays:
-            hol = public_holidays[0]
-            return f"🎉 {'Štátny sviatok / Public holiday: ' + translate.get(hol, hol) if lang == 'sk' else 'Public holiday: ' + hol}"
-        elif religious_holidays:
-            hol = religious_holidays[0]
-            return f"⛪ {'Cirkevný sviatok / Religious holiday: ' + translate.get(hol, hol) if lang == 'sk' else 'Religious holiday: ' + hol}"
-        else:
-            return None
+        translated = [translate.get(n, n) for n in names]
+        return ", ".join(translated)
+
     except Exception as e:
-        print("Holiday API error:", e)
-        return None
+        print("Holiday check error:", e)
+        return KNOWN_PUBLIC_HOLIDAYS.get((iso2, date_obj.strftime("%m-%d")), None)
+
+# Fallback – ručne doplnené štátne a cirkevné sviatky (ak API nič nevráti)
+KNOWN_PUBLIC_HOLIDAYS = {
+    # Slovensko 🇸🇰
+    ("SK", "01-01"): "Nový rok – Deň vzniku SR",
+    ("SK", "01-06"): "Zjavenie Pána (Traja králi)",
+    ("SK", "05-01"): "Sviatok práce",
+    ("SK", "05-08"): "Deň víťazstva nad fašizmom",
+    ("SK", "07-05"): "Sviatok sv. Cyrila a Metoda",
+    ("SK", "08-29"): "Výročie SNP",
+    ("SK", "09-01"): "Deň Ústavy SR",
+    ("SK", "09-15"): "Sedembolestná Panna Mária",
+    ("SK", "11-01"): "Sviatok všetkých svätých",
+    ("SK", "11-17"): "Deň boja za slobodu a demokraciu",
+    ("SK", "12-24"): "Štedrý deň",
+    ("SK", "12-25"): "Prvý sviatok vianočný",
+    ("SK", "12-26"): "Druhý sviatok vianočný",
+
+    # Česko 🇨🇿
+    ("CZ", "01-01"): "Nový rok – Deň obnovy samostatného českého štátu",
+    ("CZ", "05-01"): "Svátek práce",
+    ("CZ", "05-08"): "Den vítězství",
+    ("CZ", "07-05"): "Den slovanských věrozvěstů Cyrila a Metoděje",
+    ("CZ", "07-06"): "Den upálení mistra Jana Husa",
+    ("CZ", "09-28"): "Den české státnosti (sv. Václav)",
+    ("CZ", "10-28"): "Den vzniku samostatného československého státu",
+    ("CZ", "11-17"): "Den boje za svobodu a demokracii",
+    ("CZ", "12-24"): "Štědrý den",
+    ("CZ", "12-25"): "1. svátek vánoční",
+    ("CZ", "12-26"): "2. svátek vánoční",
+
+    # Rakúsko 🇦🇹
+    ("AT", "01-01"): "Neujahr",
+    ("AT", "01-06"): "Heilige Drei Könige",
+    ("AT", "05-01"): "Staatsfeiertag",
+    ("AT", "08-15"): "Mariä Himmelfahrt",
+    ("AT", "10-26"): "Nationalfeiertag",
+    ("AT", "11-01"): "Allerheiligen",
+    ("AT", "12-25"): "Christtag",
+    ("AT", "12-26"): "Stefanitag",
+
+    # Nemecko 🇩🇪
+    ("DE", "01-01"): "Neujahr",
+    ("DE", "05-01"): "Tag der Arbeit",
+    ("DE", "10-03"): "Tag der Deutschen Einheit",
+    ("DE", "12-25"): "Erster Weihnachtstag",
+    ("DE", "12-26"): "Zweiter Weihnachtstag",
+
+    # Maďarsko 🇭🇺
+    ("HU", "03-15"): "Nemzeti ünnep (Deň revolúcie 1848)",
+    ("HU", "08-20"): "Szent István ünnepe",
+    ("HU", "10-23"): "Nemzeti ünnep (Deň republiky)",
+    ("HU", "11-01"): "Mindenszentek",
+    ("HU", "12-25"): "Karácsony",
+    ("HU", "12-26"): "Karácsony második napja",
+
+    # Spojené kráľovstvo 🇬🇧
+    ("GB", "01-01"): "New Year’s Day",
+    ("GB", "12-25"): "Christmas Day",
+    ("GB", "12-26"): "Boxing Day",
+
+    # Poľsko 🇵🇱
+    ("PL", "01-01"): "Nowy Rok",
+    ("PL", "01-06"): "Święto Trzech Króli",
+    ("PL", "05-01"): "Święto Pracy",
+    ("PL", "05-03"): "Święto Konstytucji 3 Maja",
+    ("PL", "08-15"): "Wniebowzięcie Najświętszej Maryi Panny",
+    ("PL", "11-01"): "Wszystkich Świętych",
+    ("PL", "11-11"): "Narodowe Święto Niepodległości",
+    ("PL", "12-25"): "Boże Narodzenie",
+    ("PL", "12-26"): "Drugi dzień Świąt Bożego Narodzenia",
+}
 # ───────────────────────────────────────────────────────────────────────────────
 # IssueCoin avatar & messages
 # ───────────────────────────────────────────────────────────────────────────────
@@ -521,6 +583,7 @@ if not df.empty:
         file_name=file_name,
         mime="text/csv",
     )
+
 
 
 
