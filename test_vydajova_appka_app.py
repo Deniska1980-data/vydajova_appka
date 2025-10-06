@@ -22,19 +22,42 @@ LANG = "sk" if "Slovensky" in lang_choice else "en"
 # ───────────────────────────────────────────────────────────────────────────────
 # 🧾 Hlavný nadpis a štýly
 # ───────────────────────────────────────────────────────────────────────────────
-st.markdown("""
+# 🧾 Hlavný nadpis a štýly (béžové + a11y)
+BG = "#F7F1E3"
+PANEL = "#EFE8DA"
+TEXT = "#1B1B1B"
+ACCENT = "#0B65C2"
+MUTED = "#6A6A6A"
+
+st.markdown(f"""
 <style>
-html, body, [class*="css"] { font-size: 16px; }
-h1 { font-size: 28px !important; margin-bottom: .25rem; }
-h2 { font-size: 22px !important; }
-.stButton>button { font-size: 16px; padding: 8px 14px; }
-.issue-row { display:flex; gap:10px; align-items:flex-start; margin:.25rem 0 .75rem; }
-.issue-avatar { font-size: 28px; line-height:1; min-width: 2rem; text-align:center; }
-.issue-bubble { background:#eaf2ff; border-radius:12px; padding:.6rem .9rem; }
-.gdpr-note { color:#666; font-size:14px; text-align:center; margin-top:.75rem; }
-.small-cap { color:#6a6a6a; font-size: 13px; margin-top:-.25rem; }
+html, body, [class*="css"] {{ font-size: 18px; line-height:1.5; }}
+.stApp, [data-testid="stAppViewContainer"] {{ background:{BG} !important; }}
+section[data-testid="stSidebar"] > div:first-child {{ background:{PANEL} !important; }}
+
+h1 {{ font-size: 28px !important; margin-bottom: .25rem; color:{TEXT}; }}
+h2 {{ font-size: 22px !important; color:{TEXT}; }}
+
+.stButton>button {{ font-size:17px; padding:10px 16px; border-radius:10px; }}
+.stButton>button:focus {{ box-shadow: 0 0 0 3px rgba(11,101,194,.25); }}
+
+a {{ color:{ACCENT}; text-decoration: underline; }}
+
+.issue-row {{ display:flex; gap:10px; align-items:flex-start; margin:.25rem 0 .75rem; }}
+.issue-avatar {{ font-size:28px; line-height:1; min-width:2rem; text-align:center; }}
+.issue-bubble {{ background:{PANEL}; border-radius:14px; padding:.7rem 1rem; color:{TEXT}; }}
+
+.gdpr-note {{ color:{MUTED}; font-size:14px; text-align:center; margin-top:.75rem; }}
+.small-cap {{ color:{MUTED}; font-size:13px; margin-top:-.25rem; }}
+
+div[data-testid="stDataFrame"] div[role="grid"] {{
+  background:{PANEL}; color:{TEXT}; border-radius:10px; border:1px solid rgba(0,0,0,.06);
+}}
+
+:focus-visible {{ outline:3px solid {ACCENT}; outline-offset:2px; }}
 </style>
 """, unsafe_allow_html=True)
+
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Calendarific API
@@ -740,16 +763,17 @@ if not df.empty:
 
     grouped = df.groupby("Category")["Converted_CZK"].sum().reset_index()
     chart = (
-        alt.Chart(grouped)
-        .mark_bar()
-        .encode(
-            x=alt.X("Category", sort="-y", title=TEXTS[LANG]["category"]),
-            y=alt.Y("Converted_CZK", title="CZK"),
-            tooltip=["Category", "Converted_CZK"]
-        )
-        .properties(height=320)
+    alt.Chart(grouped, background=BG)
+    .mark_bar()
+    .encode(
+        x=alt.X("Category", sort="-y", title=TEXTS[LANG]["category"]),
+        y=alt.Y("Converted_CZK", title="CZK"),
+        tooltip=["Category", "Converted_CZK"]
     )
-    st.altair_chart(chart, use_container_width=True)
+    .properties(height=320)
+    .configure_axis(labelColor=TEXT, titleColor=TEXT, gridColor="#D8D2C4")
+    .configure_view(strokeWidth=0)
+)
 
     # Export CSV
     csv = df.to_csv(index=False).encode("utf-8")
@@ -760,3 +784,4 @@ if not df.empty:
         file_name=file_name,
         mime="text/csv",
     )
+
