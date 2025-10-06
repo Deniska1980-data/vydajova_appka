@@ -56,17 +56,6 @@ Bilingválna appka vo **Streamlite** na správu výdavkov.
   - vybrané sviatky pre SK/CZ sú **preložené**; medzinárodné cirkevné/regionálne nechávame **v origináli**, aby nevznikali zvláštne preklady  
   - ak API nevráti nič, použijeme vlastný **fallback** (SK, CZ, PL, DE, HU, GB…)
 
-**Konfigurácia kľúča:**
-```toml
-# .streamlit/secrets.toml
-CAL_API_KEY = "tvoj_calendarific_api_key"
-
-**Lokálne spustenie**
-python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-streamlit run app.py        # alebo test_vydajova_appka_app.py
-
 **🔒 Súkromie**
 
 Žiadny backend, žiadna databáza.
@@ -94,3 +83,14 @@ IssueCoin by Deny – priateľský AI agent s RAG, ktorý dohliada na sviatky a 
 📄 License
 
 MIT
+
+**Konfigurácia kľúča:**
+```toml
+# .streamlit/secrets.toml
+CAL_API_KEY = "tvoj_calendarific_api_key"
+
+**Lokálne spustenie**
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+streamlit run app.py        # alebo test_vydajova_appka_app.py
