@@ -74,15 +74,14 @@ Deny – návrh a implementácia
 IssueCoin by Deny – priateľský AI agent s RAG, ktorý dohliada na sviatky a dobré návyky
 
 **📸 Screenshots**
+![Hlavná ukážka](obrazky_vytah_appka/spravny_obrazek1.JPG)
 
-![RAG – prehľad](/obrazky_vytah_appka/RAG_obrazek1.JPG)
-
-
-![IssueCoin – správny obrázok](/obrazky_vytah_appka/spravny_obrazek1.JPG)
+![Ako funguje RAG](obrazky_vytah_appka/RAG_obrazek1.JPG)
 
 
 ## License
-MIT — see [LICENSE](LICENSE) for details.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![Streamlit App](https://img.shields.io/badge/Live%20Demo-Streamlit-brightgreen)](https://vydajovaappka-yumqiidaqwjyf5kcauxygh.streamlit.app/)
 
 ## 🛠️ Lokálne spustenie (voliteľné)
 <details>
