@@ -55,15 +55,6 @@ Tento prístup je rýchly, stabilný a predvídateľný pre produkčné UI.
 | **Calendarific** | Štátne sviatky + observances | Rozlišujem **public holiday** vs. **observance/religious**. Pre SK/CZ mapujem známe sviatky (preklad), ak API nič nevráti, mám **lokálny fallback**. |
 
 > API kľúč pre Calendarific je uložený v `st.secrets`.
-
-<details>
-<summary>Konfigurácia kľúča (skryté)</summary>
-
-```toml
-# .streamlit/secrets.toml
-CAL_API_KEY = "tvoj_calendarific_api_key"
-
----
 ##Stručná architektúra
 
 UI (Streamlit) – i18n slovníky (SK/CZ + EN)
@@ -78,6 +69,12 @@ Graf & export – Altair (sumy podľa kategórie) + CSV download
 ---
 ##Licencia
 Projekt je pod licenciou MIT [LICENSE](LICENSE)
+<details>
+<summary>Konfigurácia kľúča (skryté)</summary>
+
+```toml
+# .streamlit/secrets.toml
+CAL_API_KEY = "tvoj_calendarific_api_key"
 
 ---
 
