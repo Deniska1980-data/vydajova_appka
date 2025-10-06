@@ -18,8 +18,6 @@
 
 ---
 
-![Hlavná ukážka](obrazky_vytah_appka/spravny_obrazek1.JPG)
-
 ![IssueCoin – sviatočné hlášky a úspešné uloženie záznamu](obrazky_vytah_appka/spravny_obrazek1.JPG)
 
 
