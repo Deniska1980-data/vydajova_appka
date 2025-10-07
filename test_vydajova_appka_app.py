@@ -761,22 +761,38 @@ if not df.empty:
     total = df["Converted_CZK"].sum()
     st.metric(TEXTS[LANG]["total"], f"{total:.2f} CZK")
 
-   grouped = df.groupby("Category")["Converted_CZK"].sum().reset_index()
-chart = (
-    alt.Chart(grouped, background=BG)
-    .mark_bar()
-    .encode(
-        x=alt.X("Category", sort="-y", title=TEXTS[LANG]["category"]),
-        y=alt.Y("Converted_CZK", title="CZK"),
-        tooltip=["Category", "Converted_CZK"]
-    )
-    .properties(height=320)
-    .configure_axis(labelColor=TEXT, titleColor=TEXT, gridColor="#D8D2C4")
-    .configure_view(strokeWidth=0)
-)
+   if not df.empty:
+    st.subheader(TEXTS[LANG]["summary"])
+    total = df["Converted_CZK"].sum()
+    st.metric(TEXTS[LANG]["total"], f"{total:.2f} CZK")
 
-# 🧩 zobraz graf
-st.altair_chart(chart, use_container_width=True)
+    grouped = df.groupby("Category")["Converted_CZK"].sum().reset_index()
+    chart = (
+        alt.Chart(grouped, background=BG)
+        .mark_bar()
+        .encode(
+            x=alt.X("Category", sort="-y", title=TEXTS[LANG]["category"]),
+            y=alt.Y("Converted_CZK", title="CZK"),
+            tooltip=["Category", "Converted_CZK"]
+        )
+        .properties(height=320)
+        .configure_axis(labelColor=TEXT, titleColor=TEXT, gridColor="#D8D2C4")
+        .configure_view(strokeWidth=0)
+    )
+
+    # 🧩 zobraz graf
+    st.altair_chart(chart, use_container_width=True)
+
+    # Export CSV
+    csv = df.to_csv(index=False).encode("utf-8")
+    file_name = f"expenses_{dt_date.today().isoformat()}.csv"
+    st.download_button(
+        label=TEXTS[LANG]["export"],
+        data=csv,
+        file_name=file_name,
+        mime="text/csv",
+    )
+
 
 
     # Export CSV
@@ -788,5 +804,6 @@ st.altair_chart(chart, use_container_width=True)
         file_name=file_name,
         mime="text/csv",
     )
+
 
 
