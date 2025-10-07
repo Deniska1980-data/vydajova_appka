@@ -761,7 +761,7 @@ if not df.empty:
     total = df["Converted_CZK"].sum()
     st.metric(TEXTS[LANG]["total"], f"{total:.2f} CZK")
 
-   if not df.empty:
+if not df.empty:
     st.subheader(TEXTS[LANG]["summary"])
     total = df["Converted_CZK"].sum()
     st.metric(TEXTS[LANG]["total"], f"{total:.2f} CZK")
@@ -793,8 +793,6 @@ if not df.empty:
         mime="text/csv",
     )
 
-
-
     # Export CSV
     csv = df.to_csv(index=False).encode("utf-8")
     file_name = f"expenses_{dt_date.today().isoformat()}.csv"
@@ -804,6 +802,3 @@ if not df.empty:
         file_name=file_name,
         mime="text/csv",
     )
-
-
-
