@@ -761,8 +761,8 @@ if not df.empty:
     total = df["Converted_CZK"].sum()
     st.metric(TEXTS[LANG]["total"], f"{total:.2f} CZK")
 
-    grouped = df.groupby("Category")["Converted_CZK"].sum().reset_index()
-    chart = (
+   grouped = df.groupby("Category")["Converted_CZK"].sum().reset_index()
+chart = (
     alt.Chart(grouped, background=BG)
     .mark_bar()
     .encode(
@@ -775,6 +775,10 @@ if not df.empty:
     .configure_view(strokeWidth=0)
 )
 
+# 🧩 zobraz graf
+st.altair_chart(chart, use_container_width=True)
+
+
     # Export CSV
     csv = df.to_csv(index=False).encode("utf-8")
     file_name = f"expenses_{dt_date.today().isoformat()}.csv"
@@ -784,4 +788,5 @@ if not df.empty:
         file_name=file_name,
         mime="text/csv",
     )
+
 
