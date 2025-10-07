@@ -761,11 +761,6 @@ if not df.empty:
     total = df["Converted_CZK"].sum()
     st.metric(TEXTS[LANG]["total"], f"{total:.2f} CZK")
 
-if not df.empty:
-    st.subheader(TEXTS[LANG]["summary"])
-    total = df["Converted_CZK"].sum()
-    st.metric(TEXTS[LANG]["total"], f"{total:.2f} CZK")
-
     grouped = df.groupby("Category")["Converted_CZK"].sum().reset_index()
     chart = (
         alt.Chart(grouped, background=BG)
@@ -793,3 +788,4 @@ if not df.empty:
         mime="text/csv",
         key="export_button"
     )
+
