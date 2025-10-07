@@ -748,7 +748,6 @@ if submitted:
                 post_save_issuecoin_message(d, total_today, count_today, category, LANG),
                 seasonal_avatar(d, None)
             )
-
 # ───────────────────────────────────────────────────────────────────────────────
 # LIST + SUMMARY + CHART + EXPORT
 # ───────────────────────────────────────────────────────────────────────────────
@@ -788,4 +787,5 @@ if not df.empty:
         mime="text/csv",
         key="export_button"
     )
+
 
