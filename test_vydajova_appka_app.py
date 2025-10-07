@@ -791,14 +791,5 @@ if not df.empty:
         data=csv,
         file_name=file_name,
         mime="text/csv",
-    )
-
-    # Export CSV
-    csv = df.to_csv(index=False).encode("utf-8")
-    file_name = f"expenses_{dt_date.today().isoformat()}.csv"
-    st.download_button(
-        label=TEXTS[LANG]["export"],
-        data=csv,
-        file_name=file_name,
-        mime="text/csv",
+        key="export_button"
     )
