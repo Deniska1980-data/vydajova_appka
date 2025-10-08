@@ -71,27 +71,17 @@ Tento prístup je rýchly, stabilný a predvídateľný pre produkčné UI.
 - Graf & export – Altair (sumy podľa kategórie) + CSV download
 
 ---
-##Tech: Streamlit · Python · pandas · Altair · requests · RAG (lokálne dáta + API: ČNB, Calendarific)· Docker · Google Cloud
+**Tech: Streamlit · Python · pandas · Altair · requests · RAG (lokálne dáta + API: ČNB, Calendarific)· Docker · Google Cloud**
 
----
-##Licencia
-Projekt je pod licenciou MIT [LICENSE](LICENSE)
-<details>
-<summary>Konfigurácia kľúča (skryté)</summary>
-
-```toml
-# .streamlit/secrets.toml
-CAL_API_KEY = "tvoj_calendarific_api_key"
-
----
-##☁️ Docker & Google Cloud Deployment
+**☁️ Docker & Google Cloud Deployment**
 
 Aplikácia Výdavkový denník / Výdajový deník je plne kontajnerizovaná pomocou Dockeru a beží na Google Cloud Run.
 Nižšie je postup, ako bola zabalená a nasadená 
 
-🐳 1️⃣ Vytvorenie Docker image
+🐳 1️⃣ **Vytvorenie Docker image**
 
 *V koreňovom adresári projektu je súbor Dockerfile*:
+
 FROM python:3.11-slim
 
 WORKDIR /app
@@ -105,15 +95,14 @@ EXPOSE 8080
 
 CMD ["streamlit", "run", "test_vydajova_appka_app.py", "--server.port=8080", "--server.address=0.0.0.0"]
 
-
-*Build Docker image lokálne*:
+**Build Docker image lokálne**:
 docker build -t vydajova_appka .
-*Spustenie kontajnera*:
+**Spustenie kontajnera**:
 docker run -p 8501:8080 vydajova_appka
-*Aplikácia bude dostupná na*:
+**Aplikácia bude dostupná na**:
 http://0.0.0.0:8080
 
-☁️ 2️⃣ Nasadenie na Google Cloud Run
+☁️ 2️⃣ **Nasadenie na Google Cloud Run**
 a) Nahratie image do Google Container Registry
 gcloud builds submit --tag gcr.io/PROJECT_ID/vydajova_appka
 (nahrať svoj Docker image do cloudu)
@@ -125,12 +114,13 @@ gcloud run deploy vydajova-appka \
   --region europe-central2 \
   --allow-unauthenticated
 
-Google Cloud automaticky:
+**Google Cloud automaticky**:
 vytvorí serverless inštanciu kontajnera,
 priradí HTTPS adresu,
 škáluje podľa dopytu (platíš len, keď appka beží)
 
 🧰 Použité služby
+
 | Komponent                           | Účel                        | Poznámka                       |
 | ----------------------------------- | --------------------------- | ------------------------------ |
 | **Docker**                          | Kontajnerizácia aplikácie   | Izolované, prenosné prostredie |
@@ -138,6 +128,19 @@ priradí HTTPS adresu,
 | **Google Cloud Run**                | Serverless hosting          | Automatické škálovanie, HTTPS  |
 | **Google Container Registry (GCR)** | Ukladanie Docker image      | Centrálne úložisko image-ov    |
 
+---
+##Licencia
+Projekt je pod licenciou MIT [LICENSE](LICENSE)
+---
+
+<details>
+<summary>Konfigurácia kľúča (skryté)</summary>
+
+```toml
+# .streamlit/secrets.toml
+CAL_API_KEY = "tvoj_calendarific_api_key"
+
+---
 
 ## 🖥️ Lokálne spustenie
 
