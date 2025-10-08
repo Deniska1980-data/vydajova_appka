@@ -684,7 +684,7 @@ if submitted:
             # success line
             if LANG == "sk":
                 if code == "CZK":
-                st.success(f"{TEXTS[LANG]['saved_ok']} → {converted:.2f} CZK — {TEXTS[LANG]['rate_info']}: 1:1 ({TEXTS[LANG]['rate_from']} {rate_date})")
+                    st.success(f"{TEXTS[LANG]['saved_ok']} → {converted:.2f} CZK — {TEXTS[LANG]['rate_info']}: 1:1 ({TEXTS[LANG]['rate_from']} {rate_date})")
                 else:
                     st.success(f"{TEXTS[LANG]['saved_ok']} → {converted:.2f} CZK — {TEXTS[LANG]['rate_info']}: {rate:.4f} CZK/1 {code} ({TEXTS[LANG]['rate_from']} {rate_date})")
             else:
@@ -791,6 +791,7 @@ if not df.empty:
         mime="text/csv",
         key="export_button"
     )
+
 
 
 
