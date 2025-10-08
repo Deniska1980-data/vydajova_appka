@@ -84,6 +84,60 @@ Projekt je pod licenciou MIT [LICENSE](LICENSE)
 CAL_API_KEY = "tvoj_calendarific_api_key"
 
 ---
+##☁️ Docker & Google Cloud Deployment
+
+Aplikácia Výdavkový denník / Výdajový deník je plne kontajnerizovaná pomocou Dockeru a beží na Google Cloud Run.
+Nižšie je postup, ako bola zabalená a nasadená 
+
+🐳 1️⃣ Vytvorenie Docker image
+
+*V koreňovom adresári projektu je súbor Dockerfile*:
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY . .
+
+EXPOSE 8080
+
+CMD ["streamlit", "run", "test_vydajova_appka_app.py", "--server.port=8080", "--server.address=0.0.0.0"]
+
+
+*Build Docker image lokálne*:
+docker build -t vydajova_appka .
+*Spustenie kontajnera*:
+docker run -p 8501:8080 vydajova_appka
+*Aplikácia bude dostupná na*:
+http://0.0.0.0:8080
+
+☁️ 2️⃣ Nasadenie na Google Cloud Run
+a) Nahratie image do Google Container Registry
+gcloud builds submit --tag gcr.io/PROJECT_ID/vydajova_appka
+(nahrať svoj Docker image do cloudu)
+
+b) Spustenie služby na Cloud Run
+gcloud run deploy vydajova-appka \
+  --image gcr.io/PROJECT_ID/vydajova_appka \
+  --platform managed \
+  --region europe-central2 \
+  --allow-unauthenticated
+
+Google Cloud automaticky:
+vytvorí serverless inštanciu kontajnera,
+priradí HTTPS adresu,
+škáluje podľa dopytu (platíš len, keď appka beží)
+
+🧰 Použité služby
+| Komponent                           | Účel                        | Poznámka                       |
+| ----------------------------------- | --------------------------- | ------------------------------ |
+| **Docker**                          | Kontajnerizácia aplikácie   | Izolované, prenosné prostredie |
+| **Google Cloud Build**              | Build Docker image v cloude | Vytvára a ukladá image do GCR  |
+| **Google Cloud Run**                | Serverless hosting          | Automatické škálovanie, HTTPS  |
+| **Google Container Registry (GCR)** | Ukladanie Docker image      | Centrálne úložisko image-ov    |
+
 
 ## 🖥️ Lokálne spustenie
 
