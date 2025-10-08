@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 > Bilingválny výdavkový denník (SK/CZ + EN) v Streamlite s AI agentom **IssueCoin**.  
-> Využíva **RAG** nad lokálnymi znalosťami + **2 externé API** (ČNB denné kurzy, Calendarific sviatky), má sezónne hlášky a beží **GDPR-friendly** (dáta ostávajú lokálne v session).
+> Využíva **RAG** nad lokálnymi znalosťami + **2 externé API** (ČNB denné kurzy, Calendarific sviatky), má sezónne hlášky a beží **GDPR-friendly** (dáta ostávajú lokálne v session). Aplikácia Výdavkový denník / Výdajový deník je plne kontajnerizovaná pomocou Dockeru a beží na Google Cloud Run.
 
 <p align="center">
   <a href="https://vydajova-appka-84817292369.europe-central2.run.app/">
@@ -71,7 +71,7 @@ Tento prístup je rýchly, stabilný a predvídateľný pre produkčné UI.
 - Graf & export – Altair (sumy podľa kategórie) + CSV download
 
 ---
-##Tech: Streamlit · Python · pandas · Altair · requests · RAG (lokálne dáta + API: ČNB, Calendarific)
+##Tech: Streamlit · Python · pandas · Altair · requests · RAG (lokálne dáta + API: ČNB, Calendarific)· Docker · Google Cloud
 
 ---
 ##Licencia
