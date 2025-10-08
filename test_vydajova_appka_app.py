@@ -676,7 +676,7 @@ if submitted:
                 "Shop": shop,
                 "Note": note,
                 "Converted_CZK": converted,
-                "Rate_value": round(rate, 4),
+                "Rate_value": round(rate, 2),
                 "Rate_date": rate_date
             }])
             st.session_state["expenses"] = pd.concat([st.session_state["expenses"], new_row], ignore_index=True)
@@ -684,10 +684,10 @@ if submitted:
             # success line
             if LANG == "sk":
                 st.success(f"{TEXTS[LANG]['saved_ok']} → {converted:.2f} CZK "
-                           f"— {TEXTS[LANG]['rate_info']}: {rate:.4f} CZK/1 {code} ({TEXTS[LANG]['rate_from']} {rate_date})")
+                           f"— {TEXTS[LANG]['rate_info']}: {rate:.2f} CZK/1 {code} ({TEXTS[LANG]['rate_from']} {rate_date})")
             else:
                 st.success(f"{TEXTS[LANG]['saved_ok']} → {converted:.2f} CZK "
-                           f"— {TEXTS[LANG]['rate_info']}: {rate:.4f} CZK/1 {code} ({TEXTS[LANG]['rate_from']} {rate_date})")
+                           f"— {TEXTS[LANG]['rate_info']}: {rate:.2f} CZK/1 {code} ({TEXTS[LANG]['rate_from']} {rate_date})")
 
             # 3) HOLIDAY MESSAGE (priamo použijeme hotový text z get_holiday_name)
             hol_line = get_holiday_name(d, iso2, LANG)
@@ -787,5 +787,6 @@ if not df.empty:
         mime="text/csv",
         key="export_button"
     )
+
 
 
