@@ -1,15 +1,15 @@
 # 💰 Výdavkový denník / Výdajový deník — s AI agentom IssueCoin
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit-brightgreen)](https://vydajovaappka-yumqiidaqwjyf5kcauxygh.streamlit.app/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Google%20Cloud%20Run-blue)](https://vydajova-appka-84817292369.europe-central2.run.app/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 > Bilingválny výdavkový denník (SK/CZ + EN) v Streamlite s AI agentom **IssueCoin**.  
 > Využíva **RAG** nad lokálnymi znalosťami + **2 externé API** (ČNB denné kurzy, Calendarific sviatky), má sezónne hlášky a beží **GDPR-friendly** (dáta ostávajú lokálne v session).
 
 <p align="center">
-  <a href="https://vydajovaappka-yumqiidaqwjyf5kcauxygh.streamlit.app/">
+  <a href="https://vydajova-appka-84817292369.europe-central2.run.app/">
     <img
-      src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Fvydajovaappka-yumqiidaqwjyf5kcauxygh.streamlit.app%2F"
+      src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Fvydajova-appka-84817292369.europe-central2.run.app%2F"
       alt="QR – otvor aplikáciu"
       width="220" height="220"
     />
