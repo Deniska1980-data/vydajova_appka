@@ -683,11 +683,15 @@ if submitted:
 
             # success line
             if LANG == "sk":
-                st.success(f"{TEXTS[LANG]['saved_ok']} → {converted:.2f} CZK "
-                           f"— {TEXTS[LANG]['rate_info']}: {rate:.2f} CZK/1 {code} ({TEXTS[LANG]['rate_from']} {rate_date})")
+                if code == "CZK":
+                st.success(f"{TEXTS[LANG]['saved_ok']} → {converted:.2f} CZK — {TEXTS[LANG]['rate_info']}: 1:1 ({TEXTS[LANG]['rate_from']} {rate_date})")
+                else:
+                    st.success(f"{TEXTS[LANG]['saved_ok']} → {converted:.2f} CZK — {TEXTS[LANG]['rate_info']}: {rate:.4f} CZK/1 {code} ({TEXTS[LANG]['rate_from']} {rate_date})")
             else:
-                st.success(f"{TEXTS[LANG]['saved_ok']} → {converted:.2f} CZK "
-                           f"— {TEXTS[LANG]['rate_info']}: {rate:.2f} CZK/1 {code} ({TEXTS[LANG]['rate_from']} {rate_date})")
+                if code == "CZK":
+                    st.success(f"{TEXTS[LANG]['saved_ok']} → {converted:.2f} CZK — {TEXTS[LANG]['rate_info']}: 1:1 ({TEXTS[LANG]['rate_from']} {rate_date})")
+                else:
+                    st.success(f"{TEXTS[LANG]['saved_ok']} → {converted:.2f} CZK — {TEXTS[LANG]['rate_info']}: {rate:.4f} CZK/1 {code} ({TEXTS[LANG]['rate_from']} {rate_date})")
 
             # 3) HOLIDAY MESSAGE (priamo použijeme hotový text z get_holiday_name)
             hol_line = get_holiday_name(d, iso2, LANG)
@@ -787,6 +791,7 @@ if not df.empty:
         mime="text/csv",
         key="export_button"
     )
+
 
 
 
